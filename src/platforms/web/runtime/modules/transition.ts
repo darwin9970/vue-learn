@@ -22,6 +22,11 @@ import {
 import type { VNodeWithData } from 'types/vnode'
 import VNode from 'core/vdom/vnode'
 
+/**
+ * Transition组件的钩子函数
+ * @param vnode - 虚拟节点
+ * @param toggleDisplay - 切换显示
+ */
 export function enter(vnode: VNodeWithData, toggleDisplay?: () => void) {
   const el: any = vnode.elm
 

@@ -21,9 +21,12 @@ import { currentInstance, setCurrentInstance } from 'v3/currentInstance'
 import { getCurrentScope } from 'v3/reactivity/effectScope'
 import { syncSetupProxy } from 'v3/apiSetup'
 
-export let activeInstance: any = null
-export let isUpdatingChildComponent: boolean = false
-
+export let activeInstance: any = null // 当前活动的实例
+export let isUpdatingChildComponent: boolean = false // 是否正在更新子组件
+/**
+ * 设置当前活动的实例
+ * @param vm - 组件实例
+ */
 export function setActiveInstance(vm: Component) {
   const prevActiveInstance = activeInstance
   activeInstance = vm
@@ -32,6 +35,10 @@ export function setActiveInstance(vm: Component) {
   }
 }
 
+/**
+ * 初始化生命周期
+ * @param vm - 组件实例
+ */
 export function initLifecycle(vm: Component) {
   const options = vm.$options
 
@@ -59,6 +66,10 @@ export function initLifecycle(vm: Component) {
   vm._isBeingDestroyed = false
 }
 
+/**
+ * 生命周期混入, 添加_update, $forceUpdate, $destroy方法
+ * @param Vue - Vue构造函数
+ */
 export function lifecycleMixin(Vue: typeof Component) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
@@ -144,6 +155,12 @@ export function lifecycleMixin(Vue: typeof Component) {
   }
 }
 
+/**
+ * 挂载组件
+ * @param vm - 组件实例
+ * @param el - 挂载的元素
+ * @param hydrating - 是否为服务端渲染
+ */
 export function mountComponent(
   vm: Component,
   el: Element | null | undefined,
@@ -350,6 +367,10 @@ export function updateChildComponent(
   }
 }
 
+/**
+ * 判断处于非活动树中
+ * @param vm
+ */
 function isInInactiveTree(vm) {
   while (vm && (vm = vm.$parent)) {
     if (vm._inactive) return true
@@ -357,6 +378,12 @@ function isInInactiveTree(vm) {
   return false
 }
 
+/**
+ * 递归激活子组件,
+ * 并调用activated钩子函数, 该钩子函数在keep-alive组件中使用, 用于激活缓存的组件
+ * @param vm - 组件实例
+ * @param direct - 是否直接激活
+ */
 export function activateChildComponent(vm: Component, direct?: boolean) {
   if (direct) {
     vm._directInactive = false
@@ -375,6 +402,11 @@ export function activateChildComponent(vm: Component, direct?: boolean) {
   }
 }
 
+/**
+ * 递归停用子组件
+ * @param vm - 组件实例
+ * @param direct - 是否直接停用
+ */
 export function deactivateChildComponent(vm: Component, direct?: boolean) {
   if (direct) {
     vm._directInactive = true
@@ -391,6 +423,13 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
   }
 }
 
+/**
+ * 调用钩子函数
+ * @param vm - 组件实例
+ * @param hook - 钩子函数名称
+ * @param args - 钩子函数参数
+ * @param setContext - 是否设置上下文
+ */
 export function callHook(
   vm: Component,
   hook: string,

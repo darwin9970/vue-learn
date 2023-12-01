@@ -4,6 +4,11 @@ import type { Component } from 'types/component'
 
 export interface InjectionKey<T> extends Symbol {}
 
+/**
+ * 为当前实例提供一个值。
+ * @param key - 键
+ * @param value - 值
+ */
 export function provide<T>(key: InjectionKey<T> | string | number, value: T) {
   if (!currentInstance) {
     if (__DEV__) {
@@ -15,12 +20,18 @@ export function provide<T>(key: InjectionKey<T> | string | number, value: T) {
   }
 }
 
+/**
+ * 解析提供的值
+ * @param vm
+ */
 export function resolveProvided(vm: Component): Record<string, any> {
-  // by default an instance inherits its parent's provides object
-  // but when it needs to provide values of its own, it creates its
-  // own provides object using parent provides object as prototype.
-  // this way in `inject` we can simply look up injections from direct
-  // parent and let the prototype chain do the work.
+  /**
+   * 默认情况下，实例继承其父对象的provides对象
+   * 但当它需要提供自己的价值时，它会创建
+   * own提供对象使用parent提供对象作为原型。
+   * 在“injection”中，我们可以简单地从direct中查找注射剂
+   * parent并让原型链来完成工作。
+   */
   const existing = vm._provided
   const parentProvides = vm.$parent && vm.$parent._provided
   if (parentProvides === existing) {
@@ -41,6 +52,12 @@ export function inject<T>(
   defaultValue: T | (() => T),
   treatDefaultAsFactory: true
 ): T
+/**
+ * 从祖先组件的provides对象中检索值。
+ * @param key - 键
+ * @param defaultValue - 默认值
+ * @param treatDefaultAsFactory - 是否将默认值视为工厂函数
+ */
 export function inject(
   key: InjectionKey<any> | string,
   defaultValue?: unknown,

@@ -52,11 +52,18 @@ export const isServerRendering = () => {
 // detect devtools
 export const devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
+/**
+ * 判断是否原生
+ * @param Ctor - 构造函数
+ */
 /* istanbul ignore next */
 export function isNative(Ctor: any): boolean {
   return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
 }
 
+/**
+ * 判断是否支持Symbol
+ */
 export const hasSymbol =
   typeof Symbol !== 'undefined' &&
   isNative(Symbol) &&

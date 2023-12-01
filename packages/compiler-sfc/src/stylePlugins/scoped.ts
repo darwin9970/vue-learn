@@ -3,7 +3,11 @@ import selectorParser from 'postcss-selector-parser'
 
 const animationNameRE = /^(-\w+-)?animation-name$/
 const animationRE = /^(-\w+-)?animation$/
-
+/**
+ * 作用域插件，用于处理样式作用域，即在样式选择器后面添加属性选择器，如：
+ * .foo -> .foo[data-v-xxxxxxx]
+ * @param id - id
+ */
 const scopedPlugin: PluginCreator<string> = (id = '') => {
   const keyframes = Object.create(null)
   const shortId = id.replace(/^data-v-/, '')
@@ -60,6 +64,12 @@ const scopedPlugin: PluginCreator<string> = (id = '') => {
 
 const processedRules = new WeakSet<Rule>()
 
+/**
+ * 处理规则，即在规则选择器后面添加属性选择器，如：
+ * .foo -> .foo[data-v-xxxxxxx]
+ * @param id - id
+ * @param rule - 规则
+ */
 function processRule(id: string, rule: Rule) {
   if (
     processedRules.has(rule) ||
@@ -77,6 +87,13 @@ function processRule(id: string, rule: Rule) {
   }).processSync(rule.selector)
 }
 
+/**
+ * 重写选择器，即在选择器后面添加属性选择器，如：
+ * .foo -> .foo[data-v-xxxxxxx]
+ * @param id
+ * @param selector
+ * @param selectorRoot
+ */
 function rewriteSelector(
   id: string,
   selector: selectorParser.Selector,
@@ -195,6 +212,10 @@ function rewriteSelector(
   }
 }
 
+/**
+ * 是否是空格组合器
+ * @param node
+ */
 function isSpaceCombinator(node: selectorParser.Node) {
   return node.type === 'combinator' && /^\s+$/.test(node.value)
 }

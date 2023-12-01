@@ -62,6 +62,11 @@ export function shallowRef(value?: unknown) {
   return createRef(value, true)
 }
 
+/**
+ * 创建Ref
+ * @param rawValue - 原始值
+ * @param shallow - 是否浅层
+ */
 function createRef(rawValue: unknown, shallow: boolean) {
   if (isRef(rawValue)) {
     return rawValue
@@ -77,6 +82,10 @@ function createRef(rawValue: unknown, shallow: boolean) {
   return ref
 }
 
+/**
+ * 触发Ref
+ * @param ref - Ref
+ */
 export function triggerRef(ref: Ref) {
   if (__DEV__ && !ref.dep) {
     warn(`received object is not a triggerable ref.`)
@@ -93,10 +102,18 @@ export function triggerRef(ref: Ref) {
   }
 }
 
+/**
+ * 判断是否是浅层Ref
+ * @param ref - Ref
+ */
 export function unref<T>(ref: T | Ref<T>): T {
   return isRef(ref) ? (ref.value as any) : ref
 }
 
+/**
+ * 代理Ref
+ * @param objectWithRefs - 代理对象
+ */
 export function proxyRefs<T extends object>(
   objectWithRefs: T
 ): ShallowUnwrapRef<T> {
@@ -111,6 +128,12 @@ export function proxyRefs<T extends object>(
   return proxy as any
 }
 
+/**
+ * 代理Ref并解包，即将Ref的value值代理到目标对象上，同时将Ref的value值解包
+ * @param target - 目标
+ * @param source - 源
+ * @param key - 键
+ */
 export function proxyWithRefUnwrap(
   target: any,
   source: Record<string, any>,
@@ -148,6 +171,10 @@ export type CustomRefFactory<T> = (
   set: (value: T) => void
 }
 
+/**
+ * 自定义Ref
+ * @param factory - 工厂函数
+ */
 export function customRef<T>(factory: CustomRefFactory<T>): Ref<T> {
   const dep = new Dep()
   const { get, set } = factory(
@@ -190,6 +217,10 @@ export type ToRefs<T = any> = {
   [K in keyof T]: ToRef<T[K]>
 }
 
+/**
+ * 转换为Refs
+ * @param object - 对象
+ */
 export function toRefs<T extends object>(object: T): ToRefs<T> {
   if (__DEV__ && !isReactive(object)) {
     warn(`toRefs() expects a reactive object but received a plain one.`)

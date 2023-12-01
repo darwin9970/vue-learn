@@ -34,7 +34,17 @@ export default class VNode {
   devtoolsMeta?: Object | null // used to store functional render context for devtools
   fnScopeId?: string | null // functional scope id support
   isComponentRootElement?: boolean | null // for SSR directives
-
+  /**
+   * 创建一个vnode
+   * @param tag - 标签名
+   * @param data - 节点数据
+   * @param children - 子节点
+   * @param text - 文本
+   * @param elm - 对应的真实dom
+   * @param context - 组件实例
+   * @param componentOptions - 组件配置项
+   * @param asyncFactory - 异步组件工厂函数
+   */
   constructor(
     tag?: string,
     data?: VNodeData,
@@ -45,29 +55,29 @@ export default class VNode {
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function
   ) {
-    this.tag = tag
-    this.data = data
-    this.children = children
-    this.text = text
-    this.elm = elm
-    this.ns = undefined
-    this.context = context
-    this.fnContext = undefined
-    this.fnOptions = undefined
-    this.fnScopeId = undefined
-    this.key = data && data.key
-    this.componentOptions = componentOptions
-    this.componentInstance = undefined
-    this.parent = undefined
-    this.raw = false
-    this.isStatic = false
-    this.isRootInsert = true
-    this.isComment = false
-    this.isCloned = false
-    this.isOnce = false
-    this.asyncFactory = asyncFactory
-    this.asyncMeta = undefined
-    this.isAsyncPlaceholder = false
+    this.tag = tag // 标签名
+    this.data = data // 节点数据
+    this.children = children // 子节点
+    this.text = text // 文本
+    this.elm = elm // 对应的真实dom
+    this.ns = undefined // 命名空间
+    this.context = context // 组件实例
+    this.fnContext = undefined // 函数式组件上下文
+    this.fnOptions = undefined // 函数式组件配置项
+    this.fnScopeId = undefined // 函数式组件作用域id
+    this.key = data && data.key // 节点key
+    this.componentOptions = componentOptions // 组件配置项
+    this.componentInstance = undefined // 组件实例
+    this.parent = undefined // 父节点
+    this.raw = false // 是否为原生HTML或只是普通文本
+    this.isStatic = false // 静态节点
+    this.isRootInsert = true // 是否作为根节点插入
+    this.isComment = false // 是否为注释节点
+    this.isCloned = false // 是否为克隆节点
+    this.isOnce = false // 是否有v-once指令
+    this.asyncFactory = asyncFactory // 异步组件工厂函数
+    this.asyncMeta = undefined // 异步meta
+    this.isAsyncPlaceholder = false // 是否为异步占位符节点
   }
 
   // DEPRECATED: alias for componentInstance for backwards compat.
@@ -76,14 +86,20 @@ export default class VNode {
     return this.componentInstance
   }
 }
-
+/**
+ * 创建一个空节点
+ * @param text - 文本
+ */
 export const createEmptyVNode = (text: string = '') => {
   const node = new VNode()
   node.text = text
   node.isComment = true
   return node
 }
-
+/**
+ * 创建一个文本节点
+ * @param val - 文本
+ */
 export function createTextVNode(val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
@@ -92,6 +108,10 @@ export function createTextVNode(val: string | number) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
+/**
+ * 克隆一个节点
+ * @param vnode - 节点
+ */
 export function cloneVNode(vnode: VNode): VNode {
   const cloned = new VNode(
     vnode.tag,

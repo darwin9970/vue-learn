@@ -6,6 +6,13 @@ import { prefixIdentifiers } from './prefixIdentifiers'
 
 export const CSS_VARS_HELPER = `useCssVars`
 
+/**
+ * 从列表中生成Css变量。
+ * @param vars - 变量列表
+ * @param id - id
+ * @param isProd - 是否是生产环境
+ * @param isSSR - 是否是SSR
+ */
 export function genCssVarsFromList(
   vars: string[],
   id: string,
@@ -19,6 +26,12 @@ export function genCssVarsFromList(
     .join(',\n  ')}\n}`
 }
 
+/**
+ * 生成变量名。
+ * @param id - id
+ * @param raw - 原始值
+ * @param isProd - 是否是生产环境
+ */
 function genVarName(id: string, raw: string, isProd: boolean): string {
   if (isProd) {
     return hash(id + raw)
@@ -27,6 +40,10 @@ function genVarName(id: string, raw: string, isProd: boolean): string {
   }
 }
 
+/**
+ * 标准化表达式。
+ * @param exp - 表达式
+ */
 function normalizeExpression(exp: string) {
   exp = exp.trim()
   if (
@@ -38,8 +55,11 @@ function normalizeExpression(exp: string) {
   return exp
 }
 
-const vBindRE = /v-bind\s*\(/g
-
+const vBindRE = /v-bind\s*\(/g // v-bind(
+/**
+ * 解析Css变量。
+ * @param sfc - SFC描述符
+ */
 export function parseCssVars(sfc: SFCDescriptor): string[] {
   const vars: string[] = []
   sfc.styles.forEach(style => {
@@ -66,6 +86,11 @@ const enum LexerState {
   inDoubleQuoteString
 }
 
+/**
+ * 词法分析绑定。
+ * @param content - 内容
+ * @param start - 开始位置
+ */
 function lexBinding(content: string, start: number): number | null {
   let state: LexerState = LexerState.inParens
   let parenDepth = 0
@@ -109,6 +134,10 @@ export interface CssVarsPluginOptions {
   isProd: boolean
 }
 
+/**
+ * CSS变量插件。
+ * @param opts - 配置项
+ */
 export const cssVarsPlugin: PluginCreator<CssVarsPluginOptions> = opts => {
   const { id, isProd } = opts!
   return {
@@ -139,6 +168,13 @@ export const cssVarsPlugin: PluginCreator<CssVarsPluginOptions> = opts => {
 }
 cssVarsPlugin.postcss = true
 
+/**
+ * 生成Css变量代码。
+ * @param vars - 变量列表
+ * @param bindings - 绑定元数据
+ * @param id - id
+ * @param isProd - 是否是生产环境
+ */
 export function genCssVarsCode(
   vars: string[],
   bindings: BindingMetadata,
@@ -157,6 +193,13 @@ export function genCssVarsCode(
 
 // <script setup> already gets the calls injected as part of the transform
 // this is only for single normal <script>
+/**
+ * 生成普通脚本Css变量代码。
+ * @param cssVars - Css变量列表
+ * @param bindings - 绑定元数据
+ * @param id - id
+ * @param isProd - 是否是生产环境
+ */
 export function genNormalScriptCssVarsCode(
   cssVars: string[],
   bindings: BindingMetadata,

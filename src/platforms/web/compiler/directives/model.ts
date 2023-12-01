@@ -9,7 +9,12 @@ let warn
 // so we used some reserved tokens during compile.
 export const RANGE_TOKEN = '__r'
 export const CHECKBOX_RADIO_TOKEN = '__c'
-
+/**
+ * 处理v-model指令
+ * @param el - 元素
+ * @param dir - 指令
+ * @param _warn - 警告函数
+ */
 export default function model(
   el: ASTElement,
   dir: ASTDirective,
@@ -63,6 +68,12 @@ export default function model(
   return true
 }
 
+/**
+ * 处理复选框v-model
+ * @param el - 元素
+ * @param value - 值
+ * @param modifiers - 修饰符
+ */
 function genCheckboxModel(
   el: ASTElement,
   value: string,
@@ -104,6 +115,12 @@ function genCheckboxModel(
   )
 }
 
+/**
+ * 处理单选框v-model
+ * @param el - 元素
+ * @param value - 值
+ * @param modifiers - 修饰符
+ */
 function genRadioModel(
   el: ASTElement,
   value: string,
@@ -116,6 +133,12 @@ function genRadioModel(
   addHandler(el, 'change', genAssignmentCode(value, valueBinding), null, true)
 }
 
+/**
+ * 处理select v-model
+ * @param el - 元素
+ * @param value - 值
+ * @param modifiers - 修饰符
+ */
 function genSelect(
   el: ASTElement,
   value: string,
@@ -134,6 +157,12 @@ function genSelect(
   addHandler(el, 'change', code, null, true)
 }
 
+/**
+ * 处理默认v-model
+ * @param el - 元素
+ * @param value - 值
+ * @param modifiers - 修饰符
+ */
 function genDefaultModel(
   el: ASTElement,
   value: string,

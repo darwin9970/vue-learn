@@ -18,6 +18,11 @@ import {
 } from 'compiler/parser/index'
 import { ASTElement, CompilerOptions, ModuleOptions } from 'types/compiler'
 
+/**
+ * 处理input元素，将其转换为v-if-else的形式，处理checkbox和radio，其他类型的input不做处理，直接返回
+ * @param el - 元素
+ * @param options - 编译选项
+ */
 function preTransformNode(el: ASTElement, options: CompilerOptions) {
   if (el.tag === 'input') {
     const map = el.attrsMap
@@ -80,6 +85,10 @@ function preTransformNode(el: ASTElement, options: CompilerOptions) {
   }
 }
 
+/**
+ * 克隆AST元素
+ * @param el - 元素
+ */
 function cloneASTElement(el) {
   return createASTElement(el.tag, el.attrsList.slice(), el.parent)
 }

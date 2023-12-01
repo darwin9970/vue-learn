@@ -9,6 +9,10 @@ import {
 } from '../util/index'
 import { updateListeners } from '../vdom/helpers/index'
 
+/**
+ * 初始化事件
+ * @param vm - 组件实例
+ */
 export function initEvents(vm: Component) {
   vm._events = Object.create(null)
   vm._hasHookEvent = false
@@ -21,14 +25,29 @@ export function initEvents(vm: Component) {
 
 let target: any
 
+/**
+ * 添加事件
+ * @param event - 事件名
+ * @param fn - 事件处理函数
+ */
 function add(event, fn) {
   target.$on(event, fn)
 }
 
+/**
+ * 移除事件
+ * @param event - 事件名
+ * @param fn - 事件处理函数
+ */
 function remove(event, fn) {
   target.$off(event, fn)
 }
 
+/**
+ * 创建一次性事件处理函数
+ * @param event - 事件名
+ * @param fn - 事件处理函数
+ */
 function createOnceHandler(event, fn) {
   const _target = target
   return function onceHandler() {
@@ -39,6 +58,12 @@ function createOnceHandler(event, fn) {
   }
 }
 
+/**
+ * 更新组件的事件监听器
+ * @param vm - 组件实例
+ * @param listeners - 事件监听器
+ * @param oldListeners - 旧的事件监听器
+ */
 export function updateComponentListeners(
   vm: Component,
   listeners: Object,
@@ -56,6 +81,10 @@ export function updateComponentListeners(
   target = undefined
 }
 
+/**
+ * 事件混入
+ * @param Vue - Vue构造函数
+ */
 export function eventsMixin(Vue: typeof Component) {
   const hookRE = /^hook:/
   Vue.prototype.$on = function (

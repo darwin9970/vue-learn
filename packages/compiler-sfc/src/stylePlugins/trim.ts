@@ -1,5 +1,8 @@
 import { PluginCreator } from 'postcss'
 
+/**
+ * 包装插件
+ */
 const trimPlugin: PluginCreator<{}> = () => {
   return {
     postcssPlugin: 'vue-sfc-trim',

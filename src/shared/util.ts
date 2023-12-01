@@ -4,24 +4,41 @@ export const isArray = Array.isArray
 
 // These helpers produce better VM code in JS engines due to their
 // explicitness and function inlining.
+/**
+ * 检查是否未定义值。
+ * @param v - 值
+ */
 export function isUndef(v: any): v is undefined | null {
   return v === undefined || v === null
 }
 
+/**
+ * 检查是否定义了值。
+ * @param v - 值
+ */
 export function isDef<T>(v: T): v is NonNullable<T> {
   return v !== undefined && v !== null
 }
 
+/**
+ * 检查是否为True。
+ * @param v - 值
+ */
 export function isTrue(v: any): boolean {
   return v === true
 }
 
+/**
+ * 检查是否为False。
+ * @param v
+ */
 export function isFalse(v: any): boolean {
   return v === false
 }
 
 /**
- * Check if value is primitive.
+ * 检查值是否为原始值。
+ * @param value
  */
 export function isPrimitive(value: any): boolean {
   return (
@@ -33,6 +50,10 @@ export function isPrimitive(value: any): boolean {
   )
 }
 
+/**
+ * 检查值是否为function。
+ * @param value
+ */
 export function isFunction(value: any): value is (...args: any[]) => any {
   return typeof value === 'function'
 }
@@ -41,6 +62,10 @@ export function isFunction(value: any): value is (...args: any[]) => any {
  * Quick object check - this is primarily used to tell
  * objects from primitive values when we know the value
  * is a JSON-compliant type.
+ */
+/**
+ * 检查值是否为对象。
+ * @param obj - 值
  */
 export function isObject(obj: any): boolean {
   return obj !== null && typeof obj === 'object'
@@ -51,6 +76,10 @@ export function isObject(obj: any): boolean {
  */
 const _toString = Object.prototype.toString
 
+/**
+ * 获取值的原始类型字符串，例如[object Object]。
+ * @param value - 值
+ */
 export function toRawType(value: any): string {
   return _toString.call(value).slice(8, -1)
 }
@@ -59,22 +88,35 @@ export function toRawType(value: any): string {
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */
+/**
+ * 严格的对象类型检查。仅对纯JavaScript对象返回true。
+ * @param obj
+ */
 export function isPlainObject(obj: any): boolean {
   return _toString.call(obj) === '[object Object]'
 }
 
+/**
+ * 检查是否为正则表达式。
+ * @param v - 值
+ */
 export function isRegExp(v: any): v is RegExp {
   return _toString.call(v) === '[object RegExp]'
 }
 
 /**
- * Check if val is a valid array index.
+ * 检查val是否为有效的数组索引。
+ * @param val - 值
  */
 export function isValidArrayIndex(val: any): boolean {
   const n = parseFloat(String(val))
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
 
+/**
+ * 检查val是否是Promise的实例。
+ * @param val - 值
+ */
 export function isPromise(val: any): val is Promise<any> {
   return (
     isDef(val) &&
@@ -84,7 +126,8 @@ export function isPromise(val: any): val is Promise<any> {
 }
 
 /**
- * Convert a value to a string that is actually rendered.
+ * 将值转换为实际呈现的字符串。
+ * @param val
  */
 export function toString(val: any): string {
   return val == null
@@ -95,8 +138,8 @@ export function toString(val: any): string {
 }
 
 /**
- * Convert an input value to a number for persistence.
- * If the conversion fails, return original string.
+ * 将输入值转换为数字以进行持久化。
+ * @param val
  */
 export function toNumber(val: string): number | string {
   const n = parseFloat(val)
@@ -104,8 +147,9 @@ export function toNumber(val: string): number | string {
 }
 
 /**
- * Make a map and return a function for checking if a key
- * is in that map.
+ * 创建一个映射并返回一个函数，用于检查键是否在该映射中。
+ * @param str
+ * @param expectsLowerCase
  */
 export function makeMap(
   str: string,
@@ -120,17 +164,19 @@ export function makeMap(
 }
 
 /**
- * Check if a tag is a built-in tag.
+ * 检查标签是否为内置标签。
  */
 export const isBuiltInTag = makeMap('slot,component', true)
 
 /**
- * Check if an attribute is a reserved attribute.
+ * 检查属性是否为保留属性。
  */
 export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
 
 /**
- * Remove an item from an array.
+ * 从数组中删除项。
+ * @param arr - 数组
+ * @param item - 项
  */
 export function remove(arr: Array<any>, item: any): Array<any> | void {
   const len = arr.length
@@ -147,16 +193,20 @@ export function remove(arr: Array<any>, item: any): Array<any> | void {
   }
 }
 
-/**
- * Check whether an object has the property.
- */
+
 const hasOwnProperty = Object.prototype.hasOwnProperty
+/**
+ * 检查对象是否具有属性。
+ * @param obj - 对象
+ * @param key - 键
+ */
 export function hasOwn(obj: Object | Array<any>, key: string): boolean {
   return hasOwnProperty.call(obj, key)
 }
 
 /**
- * Create a cached version of a pure function.
+ * 创建纯函数的缓存版本。
+ * @param fn - 函数
  */
 export function cached<R>(fn: (str: string) => R): (sr: string) => R {
   const cache: Record<string, R> = Object.create(null)
@@ -166,23 +216,26 @@ export function cached<R>(fn: (str: string) => R): (sr: string) => R {
   }
 }
 
-/**
- * Camelize a hyphen-delimited string.
- */
 const camelizeRE = /-(\w)/g
+/**
+ * 将连字符分隔的字符串转换为驼峰命名。
+ * @param str - 字符串
+ */
 export const camelize = cached((str: string): string => {
   return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ''))
 })
 
 /**
- * Capitalize a string.
+ * 将字符串的第一个字符转换为大写。
+ * @param str - 字符串
  */
 export const capitalize = cached((str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 })
 
 /**
- * Hyphenate a camelCase string.
+ * 将驼峰命名的字符串转换为连字符分隔的字符串。
+ * @param str - 字符串
  */
 const hyphenateRE = /\B([A-Z])/g
 export const hyphenate = cached((str: string): string => {
@@ -190,11 +243,11 @@ export const hyphenate = cached((str: string): string => {
 })
 
 /**
- * Simple bind polyfill for environments that do not support it,
- * e.g., PhantomJS 1.x. Technically, we don't need this anymore
- * since native bind is now performant enough in most browsers.
- * But removing it would mean breaking code that was able to run in
- * PhantomJS 1.x, so this must be kept for backward compatibility.
+ * 简单的绑定polyfill，用于不支持它的环境，例如PhantomJS 1.x。
+ * 从技术上讲，我们不再需要它，因为现在大多数浏览器中的本机绑定已经足够高效。
+ * 但是删除它将意味着破坏能够在PhantomJS 1.x中运行的代码，因此必须保留它以实现向后兼容。
+ * @param fn - 函数
+ * @param ctx - 上下文
  */
 
 /* istanbul ignore next */
@@ -212,6 +265,11 @@ function polyfillBind(fn: Function, ctx: Object): Function {
   return boundFn
 }
 
+/**
+ * 将原生bind分配给变量，以便在需要时可以轻松地导出。
+ * @param fn - 函数
+ * @param ctx - 上下文
+ */
 function nativeBind(fn: Function, ctx: Object): Function {
   return fn.bind(ctx)
 }
@@ -220,7 +278,9 @@ function nativeBind(fn: Function, ctx: Object): Function {
 export const bind = Function.prototype.bind ? nativeBind : polyfillBind
 
 /**
- * Convert an Array-like object to a real Array.
+ * 将类数组对象转换为真实数组。
+ * @param list - 列表
+ * @param start - 开始索引
  */
 export function toArray(list: any, start?: number): Array<any> {
   start = start || 0
@@ -233,7 +293,9 @@ export function toArray(list: any, start?: number): Array<any> {
 }
 
 /**
- * Mix properties into target object.
+ * 将属性混合到目标对象中。
+ * @param to - 目标对象
+ * @param _from - 源对象
  */
 export function extend(
   to: Record<PropertyKey, any>,
@@ -246,7 +308,8 @@ export function extend(
 }
 
 /**
- * Merge an Array of Objects into a single Object.
+ * 将对象数组合并为单个对象。
+ * @param arr - 数组
  */
 export function toObject(arr: Array<any>): object {
   const res = {}
@@ -261,26 +324,35 @@ export function toObject(arr: Array<any>): object {
 /* eslint-disable no-unused-vars */
 
 /**
- * Perform no operation.
- * Stubbing args to make Flow happy without leaving useless transpiled code
- * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/).
+ * 不执行任何操作。
+ * @param a - 参数a
+ * @param b - 参数b
+ * @param c - 参数c
  */
 export function noop(a?: any, b?: any, c?: any) {}
 
 /**
  * Always return false.
  */
+/**
+ * 始终返回false。
+ * @param a - 参数a
+ * @param b - 参数b
+ * @param c - 参数c
+ */
 export const no = (a?: any, b?: any, c?: any) => false
 
 /* eslint-enable no-unused-vars */
 
 /**
- * Return the same value.
+ * 返回相同的值。
+ * @param _ - 参数
  */
 export const identity = (_: any) => _
 
 /**
- * Generate a string containing static keys from compiler modules.
+ * 从编译器模块生成包含静态键的字符串。
+ * @param modules - 模块
  */
 export function genStaticKeys(
   modules: Array<{ staticKeys?: string[] } /* ModuleOptions */>
@@ -291,8 +363,9 @@ export function genStaticKeys(
 }
 
 /**
- * Check if two values are loosely equal - that is,
- * if they are plain objects, do they have the same shape?
+ * 检查两个值是否松散相等-也就是说，如果它们是普通对象，它们是否具有相同的形状？
+ * @param a - 参数a
+ * @param b - 参数b
  */
 export function looseEqual(a: any, b: any): boolean {
   if (a === b) return true
@@ -336,9 +409,10 @@ export function looseEqual(a: any, b: any): boolean {
 }
 
 /**
- * Return the first index at which a loosely equal value can be
- * found in the array (if value is a plain object, the array must
- * contain an object of the same shape), or -1 if it is not present.
+ * 返回数组中可以找到松散相等值的第一个索引（如果值是普通对象，则数组必须包含相同形状的对象），
+ * 如果不存在，则返回-1。
+ * @param arr - 数组
+ * @param val - 值
  */
 export function looseIndexOf(arr: Array<unknown>, val: unknown): number {
   for (let i = 0; i < arr.length; i++) {
@@ -348,7 +422,8 @@ export function looseIndexOf(arr: Array<unknown>, val: unknown): number {
 }
 
 /**
- * Ensure a function is called only once.
+ * 确保函数只调用一次。
+ * @param fn - 函数
  */
 export function once<T extends (...args: any[]) => any>(fn: T): T {
   let called = false
@@ -361,6 +436,11 @@ export function once<T extends (...args: any[]) => any>(fn: T): T {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#polyfill
+/**
+ * 检查两个值是否严格相等。
+ * @param x - 参数x
+ * @param y - 参数y
+ */
 export function hasChanged(x: unknown, y: unknown): boolean {
   if (x === y) {
     return x === 0 && 1 / x !== 1 / (y as number)

@@ -173,6 +173,10 @@ export default {
   }
 }
 
+/**
+ * 在插入节点之前检查节点是否为节点
+ * @param c - 节点
+ */
 function callPendingCbs(
   c: VNodeWithData & { elm?: { _moveCb?: Function; _enterCb?: Function } }
 ) {
@@ -186,10 +190,18 @@ function callPendingCbs(
   }
 }
 
+/**
+ * 记录节点的位置信息，设置pos属性
+ * @param c - 节点
+ */
 function recordPosition(c: VNodeWithData) {
   c.data!.newPos = c.elm.getBoundingClientRect()
 }
 
+/**
+ * 应用节点位置，设置transform属性，移动节点，实现动画
+ * @param c - 节点
+ */
 function applyTranslation(c: VNodeWithData) {
   const oldPos = c.data.pos
   const newPos = c.data.newPos

@@ -10,6 +10,12 @@ const exportDefaultClassRE =
  * Utility for rewriting `export default` in a script block into a variable
  * declaration so that we can inject things into it
  */
+/**
+ * 重写默认导出。
+ * @param input - 输入
+ * @param as - as
+ * @param parserPlugins - 解析器插件
+ */
 export function rewriteDefault(
   input: string,
   as: string,
@@ -88,10 +94,20 @@ export function rewriteDefault(
   return s.toString()
 }
 
+/**
+ * 检查脚本块是否具有`export default`或`export { foo as default }`
+ * @param input - 字符
+ */
 export function hasDefaultExport(input: string): boolean {
   return defaultExportRE.test(input) || namedDefaultExportRE.test(input)
 }
 
+/**
+ * 检查是否应该跳过前缀。
+ * @param input - 输入
+ * @param end - 结束
+ * @param nodeEnd - 节点结束
+ */
 function specifierEnd(
   input: string,
   end: number,

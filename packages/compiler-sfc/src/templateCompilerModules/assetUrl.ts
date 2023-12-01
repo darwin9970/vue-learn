@@ -43,6 +43,12 @@ export default (
   }
 }
 
+/**
+ * 将URL转换为绝对路径或相对路径。
+ * @param node - AST节点
+ * @param options - URL配置项
+ * @param transformAssetUrlsOption - 转换的配置项
+ */
 function transform(
   node: ASTNode,
   options: AssetURLOptions,
@@ -67,6 +73,12 @@ function transform(
   }
 }
 
+/**
+ * 重写属性
+ * @param attr - 属性
+ * @param name - 名称
+ * @param transformAssetUrlsOption - 转换的配置项
+ */
 function rewrite(
   attr: ASTAttr,
   name: string,

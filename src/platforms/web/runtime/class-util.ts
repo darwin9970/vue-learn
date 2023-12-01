@@ -4,6 +4,11 @@ const whitespaceRE = /\s+/
  * Add class with compatibility for SVG since classList is not supported on
  * SVG elements in IE
  */
+/**
+ * 添加class，兼容SVG
+ * @param el - 元素
+ * @param cls - class
+ */
 export function addClass(el: HTMLElement, cls?: string) {
   /* istanbul ignore if */
   if (!cls || !(cls = cls.trim())) {
@@ -28,6 +33,11 @@ export function addClass(el: HTMLElement, cls?: string) {
 /**
  * Remove class with compatibility for SVG since classList is not supported on
  * SVG elements in IE
+ */
+/**
+ * 移除class，兼容SVG
+ * @param el - 元素
+ * @param cls - class
  */
 export function removeClass(el: HTMLElement, cls?: string) {
   /* istanbul ignore if */

@@ -3,8 +3,8 @@ import { inBrowser, warn } from 'core/util'
 import { currentInstance } from '../currentInstance'
 
 /**
- * Runtime helper for SFC's CSS variable injection feature.
- * @private
+ * SFC的CSS变量注入功能的runtime助手。
+ * @param getter - 获取器
  */
 export function useCssVars(
   getter: (
@@ -20,7 +20,9 @@ export function useCssVars(
       warn(`useCssVars is called without current active component instance.`)
     return
   }
-
+  /**
+   * 监听PostEffect
+   */
   watchPostEffect(() => {
     const el = instance.$el
     const vars = getter(instance, instance._setupProxy!)

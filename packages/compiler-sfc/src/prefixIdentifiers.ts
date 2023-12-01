@@ -16,6 +16,14 @@ const doNotPrefix = makeMap(
 /**
  * The input is expected to be a valid expression.
  */
+/**
+ * 前缀标识符。
+ * @param source - 源码
+ * @param isFunctional - 是否是函数式组件
+ * @param isTS - 是否是TS
+ * @param babelOptions - babel配置项
+ * @param bindings - 绑定元数据
+ */
 export function prefixIdentifiers(
   source: string,
   isFunctional = false,

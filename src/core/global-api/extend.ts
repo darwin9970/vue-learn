@@ -5,6 +5,10 @@ import { defineComputed, proxy } from '../instance/state'
 import { extend, mergeOptions, validateComponentName } from '../util/index'
 import { getComponentName } from '../vdom/create-component'
 
+/**
+ * 初始化扩展，用于扩展Vue构造函数，以便我们可以创建
+ * @param Vue
+ */
 export function initExtend(Vue: GlobalAPI) {
   /**
    * Each instance constructor, including Vue, has a unique
@@ -79,6 +83,10 @@ export function initExtend(Vue: GlobalAPI) {
   }
 }
 
+/**
+ * 初始化props
+ * @param Comp - 组件
+ */
 function initProps(Comp: typeof Component) {
   const props = Comp.options.props
   for (const key in props) {
@@ -86,6 +94,10 @@ function initProps(Comp: typeof Component) {
   }
 }
 
+/**
+ * 初始化计算属性
+ * @param Comp - 组件
+ */
 function initComputed(Comp: typeof Component) {
   const computed = Comp.options.computed
   for (const key in computed) {

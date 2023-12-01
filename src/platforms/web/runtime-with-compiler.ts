@@ -18,6 +18,15 @@ const idToTemplate = cached(id => {
 })
 
 const mount = Vue.prototype.$mount
+/**
+ * 重写$mount方法，
+ * 将template转换成render函数，
+ * 然后调用原来的$mount方法，进行挂载，这样就可以支持template了，
+ * 这里的template可以是一个字符串，也可以是一个dom元素，
+ * 如果是一个dom元素，会调用getOuterHTML方法，获取到dom元素的outerHTML，然后再转换成render函数。
+ * @param el - 挂载的元素
+ * @param hydrating - 是否是服务端渲染
+ */
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -94,6 +103,10 @@ Vue.prototype.$mount = function (
 /**
  * Get outerHTML of elements, taking care
  * of SVG elements in IE as well.
+ */
+/**
+ * 获取元素的outerHTML，兼容SVG
+ * @param el - 元素
  */
 function getOuterHTML(el: Element): string {
   if (el.outerHTML) {

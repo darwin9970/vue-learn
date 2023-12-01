@@ -17,6 +17,10 @@ import {
 } from '../util/index'
 import type { GlobalAPI } from 'types/global-api'
 
+/**
+ * 初始化全局API
+ * @param Vue - 全局API
+ */
 export function initGlobalAPI(Vue: GlobalAPI) {
   // config
   const configDef: Record<string, any> = {}

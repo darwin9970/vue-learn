@@ -4,6 +4,12 @@ import { inBrowser } from './env'
 import { isPromise } from 'shared/util'
 import { pushTarget, popTarget } from '../observer/dep'
 
+/**
+ * 处理错误
+ * @param err - 错误
+ * @param vm - 组件实例
+ * @param info - 信息
+ */
 export function handleError(err: Error, vm: any, info: string) {
   // Deactivate deps tracking while processing error handler to avoid possible infinite rendering.
   // See: https://github.com/vuejs/vuex/issues/1505
@@ -31,6 +37,14 @@ export function handleError(err: Error, vm: any, info: string) {
   }
 }
 
+/**
+ * 调用带错误处理的函数
+ * @param handler - 处理函数
+ * @param context - 上下文
+ * @param args - 参数
+ * @param vm - 组件实例
+ * @param info - 信息
+ */
 export function invokeWithErrorHandling(
   handler: Function,
   context: any,
@@ -53,6 +67,12 @@ export function invokeWithErrorHandling(
   return res
 }
 
+/**
+ * 全局处理错误
+ * @param err - 错误
+ * @param vm - 组件实例
+ * @param info - 信息
+ */
 function globalHandleError(err, vm, info) {
   if (config.errorHandler) {
     try {
@@ -68,6 +88,12 @@ function globalHandleError(err, vm, info) {
   logError(err, vm, info)
 }
 
+/**
+ * 记录错误
+ * @param err - 错误
+ * @param vm - 组件实例
+ * @param info - 信息
+ */
 function logError(err, vm, info) {
   if (__DEV__) {
     warn(`Error in ${info}: "${err.toString()}"`, vm)

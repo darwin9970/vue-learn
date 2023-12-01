@@ -3,6 +3,11 @@ import { parseStyleText } from 'web/util/style'
 import { getAndRemoveAttr, getBindingAttr, baseWarn } from 'compiler/helpers'
 import { ASTElement, CompilerOptions, ModuleOptions } from 'types/compiler'
 
+/**
+ * 处理style属性
+ * @param el - 元素
+ * @param options - 编译选项
+ */
 function transformNode(el: ASTElement, options: CompilerOptions) {
   const warn = options.warn || baseWarn
   const staticStyle = getAndRemoveAttr(el, 'style')
@@ -29,6 +34,11 @@ function transformNode(el: ASTElement, options: CompilerOptions) {
   }
 }
 
+/**
+ * 生成静态style和动态style，
+ * 最终生成的render函数中会使用这两个属性，生成静态style和动态style
+ * @param el - 元素
+ */
 function genData(el: ASTElement): string {
   let data = ''
   if (el.staticStyle) {

@@ -2,6 +2,13 @@ import { TransformAssetUrlsOptions } from './assetUrl'
 import { UrlWithStringQuery, parse as uriParse } from 'url'
 import path from 'path'
 
+/**
+ * 转换URL为必须的，如果是外部URL、数据URL或者以#开头的URL，则返回原URL，否则返回`require(url)`，
+ * 如果是以.或~开头的URL，则返回`require(url)`，否则返回`"url"`，
+ * 如果配置了`transformAssetUrlsOption.base`，则返回`"host + path"`。
+ * @param url - URL
+ * @param transformAssetUrlsOption - 转换的配置项
+ */
 export function urlToRequire(
   url: string,
   transformAssetUrlsOption: TransformAssetUrlsOptions = {}
@@ -61,6 +68,10 @@ export function urlToRequire(
  * vuejs/component-compiler-utils#22 Support uri fragment in transformed require
  * @param urlString an url as a string
  */
+/**
+ * 解析URL
+ * @param urlString - URL字符串
+ */
 function parseUriParts(urlString: string): UrlWithStringQuery {
   // initialize return value
   const returnValue: UrlWithStringQuery = uriParse('')
@@ -76,11 +87,21 @@ function parseUriParts(urlString: string): UrlWithStringQuery {
 }
 
 const externalRE = /^(https?:)?\/\//
+
+/**
+ * 是否是外部URL
+ * @param url - URL
+ */
 function isExternalUrl(url: string): boolean {
   return externalRE.test(url)
 }
 
 const dataUrlRE = /^\s*data:/i
+
+/**
+ * 是否是数据URL
+ * @param url - URL
+ */
 function isDataUrl(url: string): boolean {
   return dataUrlRE.test(url)
 }

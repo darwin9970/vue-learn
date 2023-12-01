@@ -91,9 +91,9 @@ export interface ImportBinding {
 }
 
 /**
- * Compile `<script setup>`
- * It requires the whole SFC descriptor because we need to handle and merge
- * normal `<script>` + `<script setup>` if both are present.
+ * 编译`<script setup>`它需要整个SFC描述符，因为我们需要处理和合并正常`<script>`+`<script setup>`（如果两者都存在）。
+ * @param sfc - SFC描述符
+ * @param options - 编译选项
  */
 export function compileScript(
   sfc: SFCDescriptor,
@@ -235,11 +235,21 @@ export function compileScript(
   const scriptStartOffset = script && script.start
   const scriptEndOffset = script && script.end
 
+  /**
+   * 辅助函数
+   * @param key - key
+   */
   function helper(key: string): string {
     helperImports.add(key)
     return `_${key}`
   }
 
+  /**
+   * 解析脚本
+   * @param input - 输入
+   * @param options - 选项
+   * @param offset - 偏移量
+   */
   function parse(
     input: string,
     options: ParserOptions,
@@ -259,6 +269,12 @@ export function compileScript(
     }
   }
 
+  /**
+   * 错误函数
+   * @param msg - 消息
+   * @param node - 节点
+   * @param end - 结束
+   */
   function error(
     msg: string,
     node: Node,
@@ -273,6 +289,14 @@ export function compileScript(
     )
   }
 
+  /**
+   * 注册用户导入
+   * @param source - 源
+   * @param local - 本地
+   * @param imported - 导入
+   * @param isType - 是否类型
+   * @param isFromSetup - 是否来自setup
+   */
   function registerUserImport(
     source: string,
     local: string,
@@ -298,6 +322,11 @@ export function compileScript(
     }
   }
 
+  /**
+   * 定义Props的过程
+   * @param node - 节点
+   * @param declId - 声明ID
+   */
   function processDefineProps(node: Node, declId?: LVal): boolean {
     if (!isCallOf(node, DEFINE_PROPS)) {
       return false
@@ -342,6 +371,11 @@ export function compileScript(
     return true
   }
 
+  /**
+   * 处理默认值的过程
+   * @param node - 节点
+   * @param declId - 声明ID
+   */
   function processWithDefaults(node: Node, declId?: LVal): boolean {
     if (!isCallOf(node, WITH_DEFAULTS)) {
       return false
@@ -380,6 +414,11 @@ export function compileScript(
     return true
   }
 
+  /**
+   * 定义emits的过程
+   * @param node - 节点
+   * @param declId - 声明ID
+   */
   function processDefineEmits(node: Node, declId?: LVal): boolean {
     if (!isCallOf(node, DEFINE_EMITS)) {
       return false
@@ -423,6 +462,11 @@ export function compileScript(
     return true
   }
 
+  /**
+   * 解析限制的类型
+   * @param node - 节点
+   * @param qualifier - 限定符
+   */
   function resolveQualifiedType(
     node: Node,
     qualifier: (node: Node) => boolean
@@ -463,6 +507,10 @@ export function compileScript(
     }
   }
 
+  /**
+   * 定义expose的过程
+   * @param node - 节点
+   */
   function processDefineExpose(node: Node): boolean {
     if (isCallOf(node, DEFINE_EXPOSE)) {
       if (hasDefineExposeCall) {
@@ -474,6 +522,11 @@ export function compileScript(
     return false
   }
 
+  /**
+   * 检查无效的作用域引用
+   * @param node - 节点
+   * @param method - 方法
+   */
   function checkInvalidScopeReference(node: Node | undefined, method: string) {
     if (!node) return
     walkIdentifiers(node, id => {
@@ -489,11 +542,8 @@ export function compileScript(
       }
     })
   }
-
   /**
-   * check defaults. If the default object is an object literal with only
-   * static properties, we can directly generate more optimized default
-   * declarations. Otherwise we will have to fallback to runtime merging.
+   * 检查默认值。如果默认对象是仅具有静态属性的对象文字，则可以直接生成更多优化的默认声明。否则，我们将不得不回退到运行时合并。
    */
   function hasStaticWithDefaults() {
     return (
@@ -507,6 +557,10 @@ export function compileScript(
     )
   }
 
+  /**
+   * 生成运行时默认值
+   * @param props - 属性
+   */
   function genRuntimeProps(props: Record<string, PropTypeData>) {
     const keys = Object.keys(props)
     if (!keys.length) {
@@ -574,6 +628,10 @@ export function compileScript(
     return `\n  props: ${propsDecls},`
   }
 
+  /**
+   * 生成不是结构化的默认值
+   * @param key - 键
+   */
   function genDestructuredDefaultValue(key: string): string | undefined {
     const destructured = propsDestructuredBindings[key]
     if (destructured && destructured.default) {
@@ -586,6 +644,10 @@ export function compileScript(
     }
   }
 
+  /**
+   * 生成setup的props类型，如果有默认值，则需要删除默认值上的可选标志。
+   * @param node - 节点
+   */
   function genSetupPropsType(node: TSTypeLiteral | TSInterfaceBody) {
     const scriptSetupSource = scriptSetup!.content
     if (hasStaticWithDefaults()) {

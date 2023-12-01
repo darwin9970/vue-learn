@@ -25,6 +25,13 @@ export interface SetupContext {
   expose: (exposed: Record<string, any>) => void
 }
 
+/**
+ * 初始化Setup，
+ * 将setup函数的返回值赋值给组件实例的render属性，
+ * 如果setup函数返回的是一个函数，则直接赋值给render属性，
+ * 如果返回的是一个对象，则将对象的属性赋值给组件实例的_setupState属性，将对象的属性名作为组件实例的属性名，属性值作为组件实例的属性值
+ * @param vm - 组件实例
+ */
 export function initSetup(vm: Component) {
   const options = vm.$options
   const setup = options.setup
@@ -84,6 +91,13 @@ export function initSetup(vm: Component) {
   }
 }
 
+/**
+ * 创建Setup上下文，
+ * 即创建attrs、listeners、slots、emit、expose属性，
+ * attrs、listeners、slots属性是只读的，emit、expose属性是函数，
+ * emit函数是vm.$emit函数的别名，expose函数用于暴露组件实例的属性
+ * @param vm - 组件实例
+ */
 function createSetupContext(vm: Component): SetupContext {
   let exposeCalled = false
   return {
@@ -122,6 +136,15 @@ function createSetupContext(vm: Component): SetupContext {
   }
 }
 
+/**
+ * 同步Setup代理，
+ * 将from对象的属性赋值给to对象，如果from对象的属性值发生变化，则将to对象的属性值也改为from对象的属性值
+ * @param to - 目标对象
+ * @param from - 源对象
+ * @param prev - 前一个源对象
+ * @param instance - 组件实例
+ * @param type - 类型
+ */
 export function syncSetupProxy(
   to: any,
   from: any,
@@ -147,6 +170,14 @@ export function syncSetupProxy(
   return changed
 }
 
+/**
+ * 定义代理属性，
+ * 将instance[type][key]的值赋值给proxy[key]
+ * @param proxy - 代理对象
+ * @param key - 键
+ * @param instance - 组件实例
+ * @param type - 类型
+ */
 function defineProxyAttr(
   proxy: any,
   key: string,
@@ -162,6 +193,11 @@ function defineProxyAttr(
   })
 }
 
+/**
+ * 初始化插槽代理，
+ * 将vm.$scopedSlots赋值给vm._slotsProxy
+ * @param vm - 组件实例
+ */
 function initSlotsProxy(vm: Component) {
   if (!vm._slotsProxy) {
     syncSetupSlots((vm._slotsProxy = {}), vm.$scopedSlots)
@@ -169,6 +205,12 @@ function initSlotsProxy(vm: Component) {
   return vm._slotsProxy
 }
 
+/**
+ * 同步Setup插槽，
+ * 将from对象的属性赋值给to对象，如果from对象的属性值发生变化，则将to对象的属性值也改为from对象的属性值
+ * @param to - 目标对象
+ * @param from - 源对象
+ */
 export function syncSetupSlots(to: any, from: any) {
   for (const key in from) {
     to[key] = from[key]
@@ -181,30 +223,30 @@ export function syncSetupSlots(to: any, from: any) {
 }
 
 /**
- * @internal use manual type def because public setup context type relies on
- * legacy VNode types
+ * 使用手动类型def，因为公共设置上下文类型依赖于遗留的VNode类型
  */
 export function useSlots(): SetupContext['slots'] {
   return getContext().slots
 }
 
 /**
- * @internal use manual type def because public setup context type relies on
- * legacy VNode types
+ * 使用手动类型def，因为公共设置上下文类型依赖于遗留的VNode类型
  */
 export function useAttrs(): SetupContext['attrs'] {
   return getContext().attrs
 }
 
 /**
- * Vue 2 only
- * @internal use manual type def because public setup context type relies on
- * legacy VNode types
+ * Vue2独有
+ * 使用手动类型def，因为公共设置上下文类型依赖于遗留VNode类型
  */
 export function useListeners(): SetupContext['listeners'] {
   return getContext().listeners
 }
 
+/**
+ * 获取上下文
+ */
 function getContext(): SetupContext {
   if (__DEV__ && !currentInstance) {
     warn(`useContext() called without active instance.`)
@@ -214,9 +256,9 @@ function getContext(): SetupContext {
 }
 
 /**
- * Runtime helper for merging default declarations. Imported by compiled code
- * only.
- * @internal
+ * 用于合并默认声明的运行时帮助程序。仅由编译后的代码导入。
+ * @param raw - 原始值
+ * @param defaults - 默认值
  */
 export function mergeDefaults(
   raw: string[] | Record<string, PropOptions>,

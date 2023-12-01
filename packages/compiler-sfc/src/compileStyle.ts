@@ -46,6 +46,10 @@ export function compileStyleAsync(
   return Promise.resolve(doCompileStyle({ ...options, isAsync: true }))
 }
 
+/**
+ * 编译样式
+ * @param options - 编译样式的配置项
+ */
 export function doCompileStyle(
   options: SFCAsyncStyleCompileOptions
 ): SFCStyleCompileResults {
@@ -59,12 +63,12 @@ export function doCompileStyle(
     postcssOptions,
     postcssPlugins
   } = options
-  const preprocessor = preprocessLang && processors[preprocessLang]
-  const preProcessedSource = preprocessor && preprocess(options, preprocessor)
-  const map = preProcessedSource ? preProcessedSource.map : options.map
-  const source = preProcessedSource ? preProcessedSource.code : options.source
+  const preprocessor = preprocessLang && processors[preprocessLang] // 预处理器
+  const preProcessedSource = preprocessor && preprocess(options, preprocessor) // 预处理
+  const map = preProcessedSource ? preProcessedSource.map : options.map // map
+  const source = preProcessedSource ? preProcessedSource.code : options.source // 源码
 
-  const plugins = (postcssPlugins || []).slice()
+  const plugins = (postcssPlugins || []).slice() // 插件
   plugins.unshift(cssVarsPlugin({ id: id.replace(/^data-v-/, ''), isProd }))
   if (trim) {
     plugins.push(trimPlugin())
@@ -130,6 +134,11 @@ export function doCompileStyle(
   }
 }
 
+/**
+ * 预处理
+ * @param options - 编译样式的配置项
+ * @param preprocessor - 预处理器
+ */
 function preprocess(
   options: SFCStyleCompileOptions,
   preprocessor: StylePreprocessor

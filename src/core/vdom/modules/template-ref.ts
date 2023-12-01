@@ -12,20 +12,40 @@ import { Component } from 'types/component'
 import { isRef } from 'v3'
 
 export default {
+  /**
+   * 创建
+   * @param _ - 占位符
+   * @param vnode - 虚拟节点
+   */
   create(_: any, vnode: VNodeWithData) {
     registerRef(vnode)
   },
+  /**
+   * 更新
+   * @param oldVnode - 旧的虚拟节点
+   * @param vnode - 新的虚拟节点
+   */
   update(oldVnode: VNodeWithData, vnode: VNodeWithData) {
     if (oldVnode.data.ref !== vnode.data.ref) {
       registerRef(oldVnode, true)
       registerRef(vnode)
     }
   },
+  /**
+   * 销毁
+   * @param vnode - 虚拟节点
+   */
   destroy(vnode: VNodeWithData) {
     registerRef(vnode, true)
   }
 }
 
+/**
+ * 注册ref，
+ * 如果是删除则isRemoval为true，否则为false，默认为false
+ * @param vnode - 虚拟节点
+ * @param isRemoval - 是否是删除
+ */
 export function registerRef(vnode: VNodeWithData, isRemoval?: boolean) {
   const ref = vnode.data.ref
   if (!isDef(ref)) return
@@ -79,6 +99,12 @@ export function registerRef(vnode: VNodeWithData, isRemoval?: boolean) {
   }
 }
 
+/**
+ * 设置setupRef
+ * @param _setupState - 挂载状态
+ * @param key - 键名
+ * @param val - 值
+ */
 function setSetupRef(
   { _setupState }: Component,
   key: string | number,

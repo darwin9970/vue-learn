@@ -28,6 +28,10 @@ type AsyncComponentFactory = () => {
  * @internal the type is manually declared in <root>/types/v3-define-async-component.d.ts
  * because it relies on existing manual types
  */
+/**
+ * 定义vue3兼容的异步组件API
+ * @param source - 源数据
+ */
 export function defineAsyncComponent(
   source: (() => any) | AsyncComponentOptions
 ): AsyncComponentFactory {
@@ -59,7 +63,9 @@ export function defineAsyncComponent(
     pendingRequest = null
     return load()
   }
-
+  /**
+   * 加载
+   */
   const load = (): Promise<any> => {
     let thisRequest: Promise<any>
     return (

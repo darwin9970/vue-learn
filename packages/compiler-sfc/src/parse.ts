@@ -30,6 +30,10 @@ export interface SFCParseOptions {
   needMap?: boolean
 }
 
+/**
+ * 解析SFC。
+ * @param options - 解析SFC的配置项
+ */
 export function parse(options: SFCParseOptions): SFCDescriptor {
   const {
     source,
@@ -94,6 +98,14 @@ export function parse(options: SFCParseOptions): SFCDescriptor {
   return output
 }
 
+/**
+ * 生成SourceMap。
+ * @param filename - 文件名
+ * @param source - 源码
+ * @param generated - 生成的代码
+ * @param sourceRoot - 源码根目录
+ * @param pad - 填充
+ */
 function generateSourceMap(
   filename: string,
   source: string,

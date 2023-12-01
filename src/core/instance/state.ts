@@ -39,6 +39,12 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
+/**
+ * 将key代理到target[sourceKey][key]
+ * @param target - 目标对象
+ * @param sourceKey - 源key
+ * @param key - key
+ */
 export function proxy(target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
@@ -49,6 +55,10 @@ export function proxy(target: Object, sourceKey: string, key: string) {
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+/**
+ * 初始化状态，将props、methods、data、computed、watch添加到vm中
+ * @param vm - 组件实例
+ */
 export function initState(vm: Component) {
   const opts = vm.$options
   if (opts.props) initProps(vm, opts.props)
@@ -69,6 +79,11 @@ export function initState(vm: Component) {
   }
 }
 
+/**
+ * 初始化props，将props添加到vm._props中，并且将vm._props的值添加到vm中，以便在模板中使用
+ * @param vm - 组件实例
+ * @param propsOptions - props选项
+ */
 function initProps(vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
   const props = (vm._props = shallowReactive({}))
@@ -119,6 +134,10 @@ function initProps(vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+/**
+ * 初始化data，将data添加到vm._data中，并且将vm._data的值添加到vm中，以便在模板中使用
+ * @param vm - 组件实例
+ */
 function initData(vm: Component) {
   let data: any = vm.$options.data
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
@@ -159,6 +178,11 @@ function initData(vm: Component) {
   ob && ob.vmCount++
 }
 
+/**
+ * 获取data，如果data是函数，则执行data函数，否则直接返回data，如果data函数执行报错，则返回空对象
+ * @param data - data
+ * @param vm - 组件实例
+ */
 export function getData(data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()
@@ -172,8 +196,12 @@ export function getData(data: Function, vm: Component): any {
   }
 }
 
-const computedWatcherOptions = { lazy: true }
-
+const computedWatcherOptions = { lazy: true } // 计算属性Watcher的选项
+/**
+ * 初始化计算属性，将计算属性添加到vm._computedWatchers中，并且将计算属性的值添加到vm中，以便在模板中使用
+ * @param vm - 组件实例
+ * @param computed - 计算属性
+ */
 function initComputed(vm: Component, computed: Object) {
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null))
@@ -217,6 +245,12 @@ function initComputed(vm: Component, computed: Object) {
   }
 }
 
+/**
+ * 定义计算属性，将计算属性添加到vm中，以便在模板中使用
+ * @param target - 目标对象
+ * @param key - key
+ * @param userDef - 计算属性的配置项
+ */
 export function defineComputed(
   target: any,
   key: string,
@@ -247,6 +281,11 @@ export function defineComputed(
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+/**
+ * 创建计算属性的getter，
+ * 用于获取计算属性的值，如果计算属性的值发生变化，则会触发依赖收集，如果计算属性的值是响应式的，则会触发依赖更新，否则会触发重新渲染
+ * @param key - key
+ */
 function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
@@ -270,12 +309,21 @@ function createComputedGetter(key) {
   }
 }
 
+/**
+ * 创建getter调用程序
+ * @param fn - 函数
+ */
 function createGetterInvoker(fn) {
   return function computedGetter() {
     return fn.call(this, this)
   }
 }
 
+/**
+ * 初始化Methods，将方法添加到vm中
+ * @param vm - 组件实例
+ * @param methods - 方法
+ */
 function initMethods(vm: Component, methods: Object) {
   const props = vm.$options.props
   for (const key in methods) {
@@ -303,6 +351,11 @@ function initMethods(vm: Component, methods: Object) {
   }
 }
 
+/**
+ * 初始化watch，将watch添加到vm中，以便在模板中使用
+ * @param vm - 组件实例
+ * @param watch - watch
+ */
 function initWatch(vm: Component, watch: Object) {
   for (const key in watch) {
     const handler = watch[key]
@@ -316,6 +369,13 @@ function initWatch(vm: Component, watch: Object) {
   }
 }
 
+/**
+ * 创建watcher
+ * @param vm - 组件实例
+ * @param expOrFn - 表达式或函数
+ * @param handler - 处理程序
+ * @param options - 选项
+ */
 function createWatcher(
   vm: Component,
   expOrFn: string | (() => any),
@@ -332,6 +392,10 @@ function createWatcher(
   return vm.$watch(expOrFn, handler, options)
 }
 
+/**
+ * 状态混入
+ * @param Vue - Vue构造函数
+ */
 export function stateMixin(Vue: typeof Component) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up

@@ -18,6 +18,11 @@ export default (transformAssetUrlsOptions?: TransformAssetUrlsOptions) => ({
 // http://w3c.github.io/html/semantics-embedded-content.html#ref-for-image-candidate-string-5
 const escapedSpaceCharacters = /( |\\t|\\n|\\f|\\r)+/g
 
+/**
+ * 转换URL地址
+ * @param node - AST节点
+ * @param transformAssetUrlsOptions - 转换的配置项
+ */
 function transform(
   node: ASTNode,
   transformAssetUrlsOptions?: TransformAssetUrlsOptions

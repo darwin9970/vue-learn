@@ -13,6 +13,15 @@ import type { VNodeWithData } from 'types/vnode'
 // it's important to place the event as the first in the array because
 // the whole point is ensuring the v-model callback gets called before
 // user-attached handlers.
+/**
+ * 规范化事件，
+ * 将v-model事件放到数组的第一个位置，
+ * 因为v-model的回调函数需要在用户自定义的回调函数之前执行，
+ * 所以需要将v-model事件放到数组的第一个位置，
+ * 这样才能保证v-model的回调函数先执行，
+ * 然后再执行用户自定义的回调函数，
+ * @param on - 事件
+ */
 function normalizeEvents(on) {
   /* istanbul ignore if */
   if (isDef(on[RANGE_TOKEN])) {
@@ -32,12 +41,19 @@ function normalizeEvents(on) {
 
 let target: any
 
+/**
+ * 创建一次处理程序
+ * @param event - 事件
+ * @param handler - 处理程序
+ * @param capture - 是否捕获
+ */
 function createOnceHandler(event, handler, capture) {
   const _target = target // save current target element in closure
   return function onceHandler() {
     const res = handler.apply(null, arguments)
     if (res !== null) {
-      remove(event, onceHandler, capture, _target)
+      // 如果返回值不为null，则解绑事件
+      remove(event, onceHandler, capture, _target) // 解绑事件
     }
   }
 }
@@ -47,6 +63,13 @@ function createOnceHandler(event, handler, capture) {
 // safe to exclude.
 const useMicrotaskFix = isUsingMicroTask && !(isFF && Number(isFF[1]) <= 53)
 
+/**
+ * 添加事件监听
+ * @param name - 事件名称
+ * @param handler - 处理程序
+ * @param capture - 是否捕获
+ * @param passive - 是否被动
+ */
 function add(
   name: string,
   handler: Function,
@@ -60,8 +83,12 @@ function add(
   // and the handler would only fire if the event passed to it was fired
   // AFTER it was attached.
   if (useMicrotaskFix) {
+    // 如果是使用微任务修复，则将当前时间戳赋值给attachedTimestamp
     const attachedTimestamp = currentFlushTimestamp
-    const original = handler
+    const original = handler // 保存原始的处理程序
+    /**
+     * 重新定义处理程序
+     */
     //@ts-expect-error
     handler = original._wrapper = function (e) {
       if (
@@ -80,10 +107,12 @@ function add(
         // starting reference
         e.target.ownerDocument !== document
       ) {
+        // 如果事件没有冒泡，或者事件的时间戳大于等于attachedTimestamp，或者事件的时间戳小于等于0，或者事件的目标文档不等于当前文档，则执行原始的处理程序
         return original.apply(this, arguments)
       }
     }
   }
+  // 将事件处理程序添加到事件监听器中
   target.addEventListener(
     name,
     handler,
@@ -91,6 +120,13 @@ function add(
   )
 }
 
+/**
+ * 移除事件监听
+ * @param name - 事件名称
+ * @param handler - 处理程序
+ * @param capture - 是否捕获
+ * @param _target - 目标
+ */
 function remove(
   name: string,
   handler: Function,
@@ -105,18 +141,24 @@ function remove(
   )
 }
 
+/**
+ * 更新DOM监听器
+ * @param oldVnode - 旧虚拟节点
+ * @param vnode - 虚拟节点
+ */
 function updateDOMListeners(oldVnode: VNodeWithData, vnode: VNodeWithData) {
   if (isUndef(oldVnode.data.on) && isUndef(vnode.data.on)) {
+    // 如果旧虚拟节点和新虚拟节点都没有on属性，则直接返回
     return
   }
-  const on = vnode.data.on || {}
-  const oldOn = oldVnode.data.on || {}
+  const on = vnode.data.on || {} // 新虚拟节点的on属性
+  const oldOn = oldVnode.data.on || {} // 旧虚拟节点的on属性
   // vnode is empty when removing all listeners,
   // and use old vnode dom element
-  target = vnode.elm || oldVnode.elm
-  normalizeEvents(on)
-  updateListeners(on, oldOn, add, remove, createOnceHandler, vnode.context)
-  target = undefined
+  target = vnode.elm || oldVnode.elm // 目标元素
+  normalizeEvents(on) // 规范化事件
+  updateListeners(on, oldOn, add, remove, createOnceHandler, vnode.context) // 更新监听器
+  target = undefined // 目标元素置为undefined
 }
 
 export default {

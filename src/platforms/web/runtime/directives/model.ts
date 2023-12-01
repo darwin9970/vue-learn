@@ -21,6 +21,13 @@ if (isIE9) {
 }
 
 const directive = {
+  /**
+   * 用这个钩子函数可以定义一个绑定时执行一次的初始化动作。
+   * @param el
+   * @param binding
+   * @param vnode
+   * @param oldVnode
+   */
   inserted(el, binding, vnode, oldVnode) {
     if (vnode.tag === 'select') {
       // #6903
@@ -49,7 +56,12 @@ const directive = {
       }
     }
   },
-
+  /**
+   * 组件已更新，可以执行相应的操作
+   * @param el - 元素
+   * @param binding - 绑定
+   * @param vnode - 虚拟节点
+   */
   componentUpdated(el, binding, vnode) {
     if (vnode.tag === 'select') {
       setSelected(el, binding, vnode.context)
@@ -74,6 +86,17 @@ const directive = {
   }
 }
 
+/**
+ * 获取选中的值，
+ * 如果是多选，返回一个数组，
+ * 否则返回一个字符串，
+ * 如果没有选中，返回null，
+ * 如果是select标签，返回一个数组，
+ * 否则返回一个字符串，如果没有选中，返回null
+ * @param el - 元素
+ * @param binding - 绑定
+ * @param vm - vue实例
+ */
 function setSelected(el, binding, vm) {
   actuallySetSelected(el, binding, vm)
   /* istanbul ignore if */
@@ -84,9 +107,16 @@ function setSelected(el, binding, vm) {
   }
 }
 
+/**
+ * 设置选中的值
+ * @param el
+ * @param binding
+ * @param vm
+ */
 function actuallySetSelected(el, binding, vm) {
-  const value = binding.value
-  const isMultiple = el.multiple
+  const value = binding.value // 获取绑定的值
+  const isMultiple = el.multiple // 是否是多选
+  // 如果是多选，但是绑定的值不是数组，报错
   if (isMultiple && !Array.isArray(value)) {
     __DEV__ &&
       warn(
@@ -98,9 +128,11 @@ function actuallySetSelected(el, binding, vm) {
       )
     return
   }
-  let selected, option
-  for (let i = 0, l = el.options.length; i < l; i++) {
-    option = el.options[i]
+  //
+  let selected, option // 选中的值，选项
+  for (let i = 0, l = el.options.length; i < l; i++) { // 遍历选项
+    option = el.options[i] // 获取选项
+    // 如果是多选，判断绑定的值是否在选项中，如果在，设置选中，否则取消选中
     if (isMultiple) {
       selected = looseIndexOf(value, getValue(option)) > -1
       if (option.selected !== selected) {
@@ -120,18 +152,35 @@ function actuallySetSelected(el, binding, vm) {
   }
 }
 
+/**
+ * 判断是否没有匹配的选项
+ * @param value - 值
+ * @param options - 选项
+ */
 function hasNoMatchingOption(value, options) {
   return options.every(o => !looseEqual(o, value))
 }
 
+/**
+ * 获取选项的值，如果有_value属性，返回_value属性，否则返回value属性
+ * @param option - 选项
+ */
 function getValue(option) {
   return '_value' in option ? option._value : option.value
 }
 
+/**
+ * 在合成开始时，设置composing属性为true
+ * @param e - 事件
+ */
 function onCompositionStart(e) {
   e.target.composing = true
 }
 
+/**
+ * 在合成结束时，设置composing属性为false，并触发input事件
+ * @param e - 事件
+ */
 function onCompositionEnd(e) {
   // prevent triggering an input event for no reason
   if (!e.target.composing) return
@@ -139,6 +188,11 @@ function onCompositionEnd(e) {
   trigger(e.target, 'input')
 }
 
+/**
+ * 触发事件
+ * @param el - 元素
+ * @param type - 事件类型
+ */
 function trigger(el, type) {
   const e = document.createEvent('HTMLEvents')
   e.initEvent(type, true, true)

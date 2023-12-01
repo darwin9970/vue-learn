@@ -12,6 +12,15 @@ import type {
 } from '@babel/types'
 import { walk } from 'estree-walker'
 
+/**
+ * 遍历AST中的标识符，
+ * 包括函数参数、变量、函数名、类名等，对于每个标识符，
+ * 调用回调函数，传入标识符节点、父节点、父节点栈、是否引用、是否本地变量，
+ * 如果回调函数返回true，则停止遍历，否则继续遍历。
+ * @param root - AST根节点
+ * @param onIdentifier - 标识符回调函数
+ * @param onNode - 节点回调函数
+ */
 export function walkIdentifiers(
   root: Node,
   onIdentifier: (
@@ -84,6 +93,12 @@ export function walkIdentifiers(
   })
 }
 
+/**
+ * 判断标识符是否被引用
+ * @param id - 标识符
+ * @param parent - 父节点
+ * @param parentStack - 父节点栈
+ */
 export function isReferencedIdentifier(
   id: Identifier,
   parent: Node | null,
@@ -116,6 +131,11 @@ export function isReferencedIdentifier(
   return false
 }
 
+/**
+ * 判断是否在解构赋值中
+ * @param parent - 父节点
+ * @param parentStack - 父节点栈
+ */
 export function isInDestructureAssignment(
   parent: Node,
   parentStack: Node[]
@@ -137,6 +157,11 @@ export function isInDestructureAssignment(
   return false
 }
 
+/**
+ * 遍历函数参数
+ * @param node - 函数节点
+ * @param onIdent - 标识符回调函数
+ */
 export function walkFunctionParams(
   node: Function,
   onIdent: (id: Identifier) => void
@@ -148,6 +173,11 @@ export function walkFunctionParams(
   }
 }
 
+/**
+ * 遍历块级声明，包括变量声明、函数声明、类声明，但不包括类型声明。
+ * @param block - 块级节点
+ * @param onIdent - 标识符回调函数
+ */
 export function walkBlockDeclarations(
   block: BlockStatement | Program,
   onIdent: (node: Identifier) => void
@@ -170,6 +200,11 @@ export function walkBlockDeclarations(
   }
 }
 
+/**
+ * 提取标识符
+ * @param param - 参数
+ * @param nodes - 标识符数组
+ */
 export function extractIdentifiers(
   param: Node,
   nodes: Identifier[] = []
@@ -215,6 +250,12 @@ export function extractIdentifiers(
   return nodes
 }
 
+/**
+ * 标记作用域标识符
+ * @param node - 节点
+ * @param child - 子节点
+ * @param knownIds - 已知标识符
+ */
 function markScopeIdentifier(
   node: Node & { scopeIds?: Set<string> },
   child: Identifier,
@@ -232,15 +273,26 @@ function markScopeIdentifier(
   ;(node.scopeIds || (node.scopeIds = new Set())).add(name)
 }
 
+/**
+ * 判断节点是否为函数类型
+ * @param node - 节点
+ */
 export const isFunctionType = (node: Node): node is Function => {
   return /Function(?:Expression|Declaration)$|Method$/.test(node.type)
 }
-
+/**
+ * 判断节点是否为静态属性
+ * @param node - 节点
+ */
 export const isStaticProperty = (node: Node): node is ObjectProperty =>
   node &&
   (node.type === 'ObjectProperty' || node.type === 'ObjectMethod') &&
   !node.computed
-
+/**
+ * 判断节点是否为静态属性键
+ * @param node - 节点
+ * @param parent - 父节点
+ */
 export const isStaticPropertyKey = (node: Node, parent: Node) =>
   isStaticProperty(parent) && parent.key === node
 
@@ -252,6 +304,12 @@ export const isStaticPropertyKey = (node: Node, parent: Node) =>
  *
  * https://github.com/babel/babel/blob/main/LICENSE
  *
+ */
+/**
+ * 判断节点是否被引用，即是否被使用，如：
+ * @param node - 节点
+ * @param parent - 父节点
+ * @param grandparent - 祖宗节点
  */
 function isReferenced(node: Node, parent: Node, grandparent?: Node): boolean {
   switch (parent.type) {

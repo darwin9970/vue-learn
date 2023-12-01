@@ -58,6 +58,11 @@ export interface WatchOptions<Immediate = boolean> extends WatchOptionsBase {
 export type WatchStopHandle = () => void
 
 // Simple effect.
+/**
+ * 监听简单副作用函数
+ * @param effect - 副作用函数
+ * @param options - 选项
+ */
 export function watchEffect(
   effect: WatchEffect,
   options?: WatchOptionsBase
@@ -65,6 +70,11 @@ export function watchEffect(
   return doWatch(effect, null, options)
 }
 
+/**
+ * 监听驻留的副作用函数
+ * @param effect - 副作用函数
+ * @param options - 选项
+ */
 export function watchPostEffect(
   effect: WatchEffect,
   options?: DebuggerOptions
@@ -78,6 +88,11 @@ export function watchPostEffect(
   )
 }
 
+/**
+ * 监听同步副作用函数，即在数据变化时立即执行
+ * @param effect - 副作用函数
+ * @param options - 选项
+ */
 export function watchSyncEffect(
   effect: WatchEffect,
   options?: DebuggerOptions
@@ -97,6 +112,7 @@ const INITIAL_WATCHER_VALUE = {}
 type MultiWatchSources = (WatchSource<unknown> | object)[]
 
 // overload: array of multiple sources + cb
+
 export function watch<
   T extends MultiWatchSources,
   Immediate extends Readonly<boolean> = false
@@ -151,6 +167,16 @@ export function watch<T = any, Immediate extends Readonly<boolean> = false>(
   return doWatch(source as any, cb, options)
 }
 
+/**
+ * 监听
+ * @param source - 监听源
+ * @param cb - 回调函数
+ * @param immediate - 是否立即执行
+ * @param deep - 是否深度监听
+ * @param flush - 刷新类型
+ * @param onTrack - 追踪
+ * @param onTrigger - 触发
+ */
 function doWatch(
   source: WatchSource | WatchSource[] | WatchEffect | object,
   cb: WatchCallback | null,

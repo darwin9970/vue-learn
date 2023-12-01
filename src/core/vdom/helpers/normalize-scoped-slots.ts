@@ -6,6 +6,15 @@ import type VNode from '../vnode'
 import { Component } from 'types/component'
 import { currentInstance, setCurrentInstance } from 'v3/currentInstance'
 
+/**
+ * 规范化作用域插槽，
+ * 返回规范化后的作用域插槽，
+ * 如果没有作用域插槽则返回空对象
+ * @param ownerVm - 组件实例
+ * @param scopedSlots - 作用域插槽
+ * @param normalSlots - 普通插槽
+ * @param prevScopedSlots - 上一个作用域插槽
+ */
 export function normalizeScopedSlots(
   ownerVm: Component,
   scopedSlots: { [key: string]: Function } | undefined,
@@ -62,6 +71,13 @@ export function normalizeScopedSlots(
   return res
 }
 
+/**
+ * 规范化作用域插槽
+ * @param vm - 组件实例
+ * @param normalSlots - 普通插槽
+ * @param key - 插槽名
+ * @param fn - 插槽函数
+ */
 function normalizeScopedSlot(vm, normalSlots, key, fn) {
   const normalized = function () {
     const cur = currentInstance
@@ -92,6 +108,11 @@ function normalizeScopedSlot(vm, normalSlots, key, fn) {
   return normalized
 }
 
+/**
+ * 代理普通插槽
+ * @param slots - 普通插槽
+ * @param key - 插槽名
+ */
 function proxyNormalSlot(slots, key) {
   return () => slots[key]
 }

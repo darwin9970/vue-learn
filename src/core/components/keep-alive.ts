@@ -13,10 +13,19 @@ type CacheEntry = {
 
 type CacheEntryMap = Record<string, CacheEntry | null>
 
+/**
+ * 获取组件名称，如果是组件选项，则获取组件名称，否则获取标签，如果都没有，则返回null，否则返回组件名称或标签
+ * @param opts - 组件选项
+ */
 function _getComponentName(opts?: VNodeComponentOptions): string | null {
   return opts && (getComponentName(opts.Ctor.options as any) || opts.tag)
 }
 
+/**
+ * 判断是否匹配
+ * @param pattern - 匹配模式
+ * @param name - 组件名称
+ */
 function matches(
   pattern: string | RegExp | Array<string>,
   name: string
@@ -32,6 +41,11 @@ function matches(
   return false
 }
 
+/**
+ * 清理缓存
+ * @param keepAliveInstance - keep-alive实例
+ * @param filter - 过滤器
+ */
 function pruneCache(
   keepAliveInstance: { cache: CacheEntryMap; keys: string[]; _vnode: VNode },
   filter: Function
@@ -48,6 +62,13 @@ function pruneCache(
   }
 }
 
+/**
+ * 清理缓存条目
+ * @param cache - 缓存
+ * @param key - 键
+ * @param keys - 键数组
+ * @param current - 当前vnode
+ */
 function pruneCacheEntry(
   cache: CacheEntryMap,
   key: string,
@@ -63,7 +84,7 @@ function pruneCacheEntry(
   remove(keys, key)
 }
 
-const patternTypes: Array<Function> = [String, RegExp, Array]
+const patternTypes: Array<Function> = [String, RegExp, Array] // 匹配模式类型
 
 // TODO defineComponent
 export default {

@@ -3,6 +3,11 @@ import { defineReactive, toggleObserving } from '../observer/index'
 import type { Component } from 'types/component'
 import { resolveProvided } from 'v3/apiInject'
 
+/**
+ * 初始化，
+ * 将provide的值添加到vm._provided中，并且将vm._provided的值添加到vm中，以便在模板中使用
+ * @param vm - 组件实例
+ */
 export function initProvide(vm: Component) {
   const provideOption = vm.$options.provide
   if (provideOption) {
@@ -27,6 +32,10 @@ export function initProvide(vm: Component) {
   }
 }
 
+/**
+ * 初始化注入
+ * @param vm
+ */
 export function initInjections(vm: Component) {
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
@@ -50,6 +59,11 @@ export function initInjections(vm: Component) {
   }
 }
 
+/**
+ * 解析注入
+ * @param inject - 注入
+ * @param vm - 组件实例
+ */
 export function resolveInject(
   inject: any,
   vm: Component

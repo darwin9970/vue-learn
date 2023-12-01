@@ -31,6 +31,12 @@ export const transitionProps = {
 
 // in case the child is also an abstract component, e.g. <keep-alive>
 // we want to recursively retrieve the real component to be rendered
+/**
+ * 获取真实的子组件，
+ * 如果是抽象组件，比如keep-alive，递归获取真实的子组件，
+ * 否则返回vnode
+ * @param vnode - 虚拟节点
+ */
 function getRealChild(vnode?: VNode): VNode | undefined {
   const compOptions = vnode && vnode.componentOptions
   if (compOptions && compOptions.Ctor.options.abstract) {
@@ -40,6 +46,10 @@ function getRealChild(vnode?: VNode): VNode | undefined {
   }
 }
 
+/**
+ * 从组件选项中提取transition相关的数据
+ * @param comp - 组件
+ */
 export function extractTransitionData(comp: Component): Record<string, any> {
   const data = {}
   const options = comp.$options
@@ -56,6 +66,11 @@ export function extractTransitionData(comp: Component): Record<string, any> {
   return data
 }
 
+/**
+ * 生成占位节点，用于处理transition组件嵌套的情况
+ * @param h - 渲染函数
+ * @param rawChild - 原始子节点
+ */
 function placeholder(h: Function, rawChild: VNode): VNode | undefined {
   // @ts-expect-error
   if (/\d-keep-alive$/.test(rawChild.tag)) {
@@ -65,6 +80,10 @@ function placeholder(h: Function, rawChild: VNode): VNode | undefined {
   }
 }
 
+/**
+ * 判断是否有父级transition
+ * @param vnode - 虚拟节点
+ */
 function hasParentTransition(vnode: VNode): boolean | undefined {
   while ((vnode = vnode.parent!)) {
     if (vnode.data!.transition) {
@@ -73,19 +92,30 @@ function hasParentTransition(vnode: VNode): boolean | undefined {
   }
 }
 
+/**
+ * 判断两个节点是否相同
+ * @param child - 子节点
+ * @param oldChild - 旧子节点
+ */
 function isSameChild(child: VNode, oldChild: VNode): boolean {
   return oldChild.key === child.key && oldChild.tag === child.tag
 }
 
+/**
+ * 判断是否是文本节点
+ * @param c
+ */
 const isNotTextNode = (c: VNode) => c.tag || isAsyncPlaceholder(c)
-
+/**
+ * 判断是否是v-show指令
+ * @param d
+ */
 const isVShowDirective = d => d.name === 'show'
 
 export default {
   name: 'transition',
   props: transitionProps,
   abstract: true,
-
   render(h: Function) {
     let children: any = this.$slots.default
     if (!children) {

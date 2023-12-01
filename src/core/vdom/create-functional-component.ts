@@ -19,29 +19,30 @@ import type { Component } from 'types/component'
 import type { VNodeData } from 'types/vnode'
 
 export function FunctionalRenderContext(
-  data: VNodeData,
-  props: Object,
-  children: Array<VNode> | undefined,
-  parent: Component,
-  Ctor: typeof Component
+  data: VNodeData, // 节点数据
+  props: Object, // 组件的props
+  children: Array<VNode> | undefined, // 子节点
+  parent: Component, // 组件的父组件实例
+  Ctor: typeof Component // 组件构造函数
 ) {
-  const options = Ctor.options
-  // ensure the createElement function in functional components
-  // gets a unique context - this is necessary for correct named slot check
-  let contextVm
+  const options = Ctor.options // 组件的配置项
+  // 确保函数式组件中的createElement函数
+  // 确保函数式组件中的createElement函数获得唯一的上下文 - 这对于正确的命名插槽检查是必要的
+  let contextVm // 组件的父组件实例
   if (hasOwn(parent, '_uid')) {
+    // 父组件实例有_uid属性，说明父组件实例是一个组件实例
     contextVm = Object.create(parent)
     contextVm._original = parent
   } else {
-    // the context vm passed in is a functional context as well.
-    // in this case we want to make sure we are able to get a hold to the
-    // real context instance.
+    // 父组件实例没有_uid属性，说明父组件实例是一个函数式组件实例
+    // 这里的parent是一个函数式组件实例，所以这里的parent._original是一个组件实例
+    // 这里的parent._original._uid是一个数字，这个数字是父组件实例的_uid
     contextVm = parent
     // @ts-ignore
     parent = parent._original
   }
-  const isCompiled = isTrue(options._compiled)
-  const needNormalization = !isCompiled
+  const isCompiled = isTrue(options._compiled) // 组件是否是编译过的
+  const needNormalization = !isCompiled // 组件是否需要标准化
 
   this.data = data
   this.props = props
@@ -67,19 +68,27 @@ export function FunctionalRenderContext(
     }
   } as any)
 
-  // support for compiled functional template
+  // 支持编译过的函数式模板
   if (isCompiled) {
-    // exposing $options for renderStatic()
-    this.$options = options
-    // pre-resolve slots for renderSlot()
-    this.$slots = this.slots()
+    // 组件是否是编译过的
+    this.$options = options // 组件的配置项
+    this.$slots = this.slots() // 插槽
     this.$scopedSlots = normalizeScopedSlots(
       parent,
       data.scopedSlots,
       this.$slots
-    )
+    ) // 作用域插槽
   }
-
+  /**
+   * 组件是否有作用域id，
+   * 如果有，就给函数式组件的createElement函数添加作用域id，
+   * 这样函数式组件的子组件就会继承函数式组件的作用域id，这样就可以正确的命名插槽，
+   * 否则函数式组件的子组件就无法正确的命名插槽，因为函数式组件的子组件的作用域id是undefined
+   * @param a - 标签名或组件构造函数或配置项
+   * @param b - 节点数据或子节点
+   * @param c - 子节点
+   * @param d - 标记是否需要标准化子节点
+   */
   if (options._scopeId) {
     this._c = (a, b, c, d) => {
       const vnode = createElement(contextVm, a, b, c, d, needNormalization)
@@ -97,6 +106,14 @@ export function FunctionalRenderContext(
 
 installRenderHelpers(FunctionalRenderContext.prototype)
 
+/**
+ * 创建函数式组件
+ * @param Ctor - 组件构造函数
+ * @param propsData - 组件的props
+ * @param data - 组件的data
+ * @param contextVm - 组件的父组件实例
+ * @param children - 组件的子节点
+ */
 export function createFunctionalComponent(
   Ctor: typeof Component,
   propsData: Object | undefined,
@@ -150,6 +167,14 @@ export function createFunctionalComponent(
   }
 }
 
+/**
+ * 克隆并标记函数式组件的结果
+ * @param vnode - VNode
+ * @param data - VNodeData
+ * @param contextVm - 组件的父组件实例
+ * @param options - 组件的配置项
+ * @param renderContext - 渲染上下文
+ */
 function cloneAndMarkFunctionalResult(
   vnode,
   data,

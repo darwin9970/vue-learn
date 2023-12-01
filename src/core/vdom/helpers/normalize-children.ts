@@ -20,6 +20,10 @@ import {
 // normalization is needed - if any child is an Array, we flatten the whole
 // thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
 // because functional components already normalize their own children.
+/**
+ * 简单规范化子节点，如果子节点是数组，则递归规范化，否则返回子节点
+ * @param children - 子节点
+ */
 export function simpleNormalizeChildren(children: any) {
   for (let i = 0; i < children.length; i++) {
     if (isArray(children[i])) {
@@ -33,6 +37,10 @@ export function simpleNormalizeChildren(children: any) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+/**
+ * 规范化子节点，返回VNode数组，如果子节点是原始值，则返回文本VNode，如果子节点是数组，则递归规范化，否则返回undefined
+ * @param children - 子节点
+ */
 export function normalizeChildren(children: any): Array<VNode> | undefined {
   return isPrimitive(children)
     ? [createTextVNode(children)]
@@ -41,10 +49,19 @@ export function normalizeChildren(children: any): Array<VNode> | undefined {
     : undefined
 }
 
+/**
+ * 是否是文本节点
+ * @param node - 节点
+ */
 function isTextNode(node): boolean {
   return isDef(node) && isDef(node.text) && isFalse(node.isComment)
 }
 
+/**
+ * 规范化数组子节点
+ * @param children
+ * @param nestedIndex
+ */
 function normalizeArrayChildren(
   children: any,
   nestedIndex?: string

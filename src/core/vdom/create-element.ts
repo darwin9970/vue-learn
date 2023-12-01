@@ -24,6 +24,15 @@ const ALWAYS_NORMALIZE = 2
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
+/**
+ * createElement的包装函数，提供了更灵活的接口，而不会被flow警告
+ * @param context - 上下文
+ * @param tag - 标签
+ * @param data - 数据
+ * @param children - 子节点
+ * @param normalizationType - 规范化类型
+ * @param alwaysNormalize - 是否总是规范化
+ */
 export function createElement(
   context: Component,
   tag: any,
@@ -43,6 +52,14 @@ export function createElement(
   return _createElement(context, tag, data, children, normalizationType)
 }
 
+/**
+ * 创建VNode
+ * @param context - 上下文
+ * @param tag - 标签
+ * @param data - 数据
+ * @param children - 子节点
+ * @param normalizationType - 规范化类型
+ */
 export function _createElement(
   context: Component,
   tag?: string | Component | Function | Object,
@@ -139,6 +156,12 @@ export function _createElement(
   }
 }
 
+/**
+ * 为vnode应用命名空间
+ * @param vnode - VNode
+ * @param ns - 命名空间
+ * @param force - 是否强制
+ */
 function applyNS(vnode, ns, force?: boolean) {
   vnode.ns = ns
   if (vnode.tag === 'foreignObject') {
@@ -162,6 +185,10 @@ function applyNS(vnode, ns, force?: boolean) {
 // ref #5318
 // necessary to ensure parent re-render when deep bindings like :style and
 // :class are used on slot nodes
+/**
+ * 注册深度绑定
+ * @param data - 数据
+ */
 function registerDeepBindings(data) {
   if (isObject(data.style)) {
     traverse(data.style)

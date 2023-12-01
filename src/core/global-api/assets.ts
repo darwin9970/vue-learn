@@ -2,6 +2,10 @@ import { ASSET_TYPES } from 'shared/constants'
 import type { GlobalAPI } from 'types/global-api'
 import { isFunction, isPlainObject, validateComponentName } from '../util/index'
 
+/**
+ * 初始化资源注册器
+ * @param Vue - 全局API
+ */
 export function initAssetRegisters(Vue: GlobalAPI) {
   /**
    * Create asset registration methods.

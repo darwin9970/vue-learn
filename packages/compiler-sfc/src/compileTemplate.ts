@@ -35,6 +35,10 @@ export interface SFCTemplateCompileResults {
   errors: (string | WarningMessage)[]
 }
 
+/**
+ * 编译模板，如果配置了预处理器，则先预处理，然后再编译。
+ * @param options - 编译模板的配置项
+ */
 export function compileTemplate(
   options: SFCTemplateCompileOptions
 ): SFCTemplateCompileResults {
@@ -63,6 +67,11 @@ export function compileTemplate(
   }
 }
 
+/**
+ * 预处理，如果是同步的，则直接返回结果，否则返回空字符串。
+ * @param options - 预处理的配置项
+ * @param preprocessor - 预处理器
+ */
 function preprocess(
   options: SFCTemplateCompileOptions,
   preprocessor: any
@@ -94,6 +103,10 @@ function preprocess(
   return res
 }
 
+/**
+ * 实际编译模板，如果配置了转换URL地址，则先转换URL地址，然后再编译。
+ * @param options
+ */
 function actuallyCompile(
   options: SFCTemplateCompileOptions
 ): SFCTemplateCompileResults {

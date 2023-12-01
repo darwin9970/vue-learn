@@ -6,6 +6,12 @@ import { warn } from 'core/util'
  * @internal this function needs manual public type declaration because it relies
  * on previously manually authored types from Vue 2
  */
+/**
+ * 创建虚拟节点，返回一个vnode
+ * @param type
+ * @param props
+ * @param children
+ */
 export function h(type: any, props?: any, children?: any) {
   if (!currentInstance) {
     __DEV__ &&

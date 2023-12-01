@@ -1,6 +1,10 @@
 import { emptyObject, warn } from '../../core/util'
 import { currentInstance } from '../currentInstance'
 
+/**
+ * 返回给定“name”的CSS模块对象。
+ * @param name - CSS模块名称
+ */
 export function useCssModule(name = '$style'): Record<string, string> {
   /* istanbul ignore else */
   if (!__GLOBAL__) {

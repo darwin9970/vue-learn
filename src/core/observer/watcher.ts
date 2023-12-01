@@ -19,7 +19,7 @@ import type { SimpleSet } from '../util/index'
 import type { Component } from 'types/component'
 import { activeEffectScope, recordEffectScope } from 'v3/reactivity/effectScope'
 
-let uid = 0
+let uid = 0 // 依赖的唯一标识符
 
 /**
  * @internal
@@ -64,33 +64,42 @@ export default class Watcher implements DepTarget {
   onTrack?: ((event: DebuggerEvent) => void) | undefined
   onTrigger?: ((event: DebuggerEvent) => void) | undefined
 
+  /**
+   * 观察者解析表达式、收集依赖关系，并在表达式的值更改时触发回调。
+   * @param vm - 组件实例
+   * @param expOrFn - 表达式或函数
+   * @param cb - 回调函数
+   * @param options - Watcher的配置项
+   * @param isRenderWatcher - 是否是渲染Watcher
+   */
   constructor(
-    vm: Component | null,
-    expOrFn: string | (() => any),
-    cb: Function,
-    options?: WatcherOptions | null,
-    isRenderWatcher?: boolean
+    vm: Component | null, // 组件实例
+    expOrFn: string | (() => any), // 表达式或函数
+    cb: Function, // 回调函数
+    options?: WatcherOptions | null, // Watcher的配置项
+    isRenderWatcher?: boolean // 是否是渲染Watcher
   ) {
+    // 组件实例，如果是渲染Watcher，则将Watcher添加到组件实例的_watcher中，否则不添加
     recordEffectScope(
-      this,
-      // if the active effect scope is manually created (not a component scope),
-      // prioritize it
-      activeEffectScope && !activeEffectScope._vm
-        ? activeEffectScope
-        : vm
-        ? vm._scope
-        : undefined
+      this, // 当前Watcher
+      activeEffectScope && !activeEffectScope._vm // 如果activeEffectScope是手动创建的（不是组件作用域），则优先使用它
+        ? activeEffectScope // activeEffectScope
+        : vm // 组件实例
+        ? vm._scope // 组件实例的作用域
+        : undefined // undefined
     )
+    // 将Watcher添加到组件实例的effects中
     if ((this.vm = vm) && isRenderWatcher) {
       vm._watcher = this
     }
     // options
+    // Watcher的配置项，如果有配置项，则将deep、user、lazy、sync、before设置为配置项中的值，否则将deep、user、lazy、sync、before设置为false
     if (options) {
-      this.deep = !!options.deep
-      this.user = !!options.user
-      this.lazy = !!options.lazy
-      this.sync = !!options.sync
-      this.before = options.before
+      this.deep = !!options.deep // 是否深度监听
+      this.user = !!options.user // 是否是用户Watcher
+      this.lazy = !!options.lazy // 是否是懒执行
+      this.sync = !!options.sync // 是否同步执行
+      this.before = options.before // 在执行Watcher的run方法之前执行的函数
       if (__DEV__) {
         this.onTrack = options.onTrack
         this.onTrigger = options.onTrigger
@@ -98,21 +107,25 @@ export default class Watcher implements DepTarget {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
-    this.cb = cb
-    this.id = ++uid // uid for batching
-    this.active = true
-    this.post = false
-    this.dirty = this.lazy // for lazy watchers
-    this.deps = []
-    this.newDeps = []
-    this.depIds = new Set()
-    this.newDepIds = new Set()
-    this.expression = __DEV__ ? expOrFn.toString() : ''
+    //
+    this.cb = cb // 回调函数
+    this.id = ++uid // 依赖的唯一标识符
+    this.active = true // 是否激活
+    this.post = false // 是否是后置的
+    this.dirty = this.lazy // 是否懒执行
+    this.deps = [] // 依赖
+    this.newDeps = [] // 新的依赖
+    this.depIds = new Set() // 依赖的唯一标识符
+    this.newDepIds = new Set() // 新的依赖的唯一标识符
+    this.expression = __DEV__ ? expOrFn.toString() : '' // 表达式
     // parse expression for getter
+    // 如果expOrFn是函数，则将expOrFn赋值给this.getter
     if (isFunction(expOrFn)) {
       this.getter = expOrFn
     } else {
+      // 否则将expOrFn解析为getter
       this.getter = parsePath(expOrFn)
+      // 如果解析失败，则将this.getter设置为noop，并打印警告信息
       if (!this.getter) {
         this.getter = noop
         __DEV__ &&
@@ -124,44 +137,53 @@ export default class Watcher implements DepTarget {
           )
       }
     }
-    this.value = this.lazy ? undefined : this.get()
+    this.value = this.lazy ? undefined : this.get() // 如果解析成功，则将this.value设置为this.get方法的返回值，否则将this.value设置为undefined
   }
 
   /**
-   * Evaluate the getter, and re-collect dependencies.
+   * 获取值并收集依赖
    */
   get() {
-    pushTarget(this)
+    pushTarget(this) // 将当前Watcher添加到Dep.target中
     let value
     const vm = this.vm
+    //
     try {
+      // 调用this.getter，获取值
       value = this.getter.call(vm, vm)
     } catch (e: any) {
+      // 如果出错，则打印错误信息
       if (this.user) {
+        // 如果是用户Watcher，则打印错误信息
         handleError(e, vm, `getter for watcher "${this.expression}"`)
       } else {
+        // 否则抛出错误
         throw e
       }
     } finally {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
+      // 如果是深度监听，则递归遍历value，将value的每一个属性都添加到依赖中
       if (this.deep) {
         traverse(value)
       }
-      popTarget()
-      this.cleanupDeps()
+      popTarget() // 将Dep.target设置为上一个Watcher
+      this.cleanupDeps() // 清理依赖
     }
-    return value
+    return value// 返回值
   }
 
   /**
-   * Add a dependency to this directive.
+   * 添加依赖
+   * @param dep
    */
   addDep(dep: Dep) {
-    const id = dep.id
+    const id = dep.id // 依赖的唯一标识符
+    // 如果新的依赖的唯一标识符中不存在依赖的唯一标识符，将依赖的唯一标识符添加到新的依赖的唯一标识符中，将依赖添加到新的依赖中
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
+       // 如果依赖的唯一标识符中不存在依赖的唯一标识符，则将当前Watcher添加到依赖中
       if (!this.depIds.has(id)) {
         dep.addSub(this)
       }
@@ -169,12 +191,13 @@ export default class Watcher implements DepTarget {
   }
 
   /**
-   * Clean up for dependency collection.
+   * 将新的依赖项集合设置为依赖项集合，将新的依赖项集合清空，将依赖项集合清空
    */
   cleanupDeps() {
-    let i = this.deps.length
+    let i = this.deps.length // 依赖的长度
     while (i--) {
       const dep = this.deps[i]
+      // 如果新的依赖的唯一标识符中不存在依赖的唯一标识符，则将当前Watcher从依赖中移除
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
       }
@@ -190,27 +213,29 @@ export default class Watcher implements DepTarget {
   }
 
   /**
-   * Subscriber interface.
-   * Will be called when a dependency changes.
+   * 订阅依赖项的更改
    */
   update() {
     /* istanbul ignore else */
+    // 如果是懒执行，则将this.dirty设置为true
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
+      // 如果是同步执行，则调用this.run方法
       this.run()
     } else {
+      // 如果不是同步执行，则将当前Watcher添加到队列中
       queueWatcher(this)
     }
   }
 
   /**
-   * Scheduler job interface.
-   * Will be called by the scheduler.
+   * 调度程序作为观察者的回调
    */
   run() {
+    // 如果当前Watcher是激活的
     if (this.active) {
-      const value = this.get()
+      const value = this.get() // 获取值
       if (
         value !== this.value ||
         // Deep watchers and watchers on Object/Arrays should fire even
@@ -239,8 +264,7 @@ export default class Watcher implements DepTarget {
   }
 
   /**
-   * Evaluate the value of the watcher.
-   * This only gets called for lazy watchers.
+   * 评估观察者的值，这仅适用于懒执行观察者。
    */
   evaluate() {
     this.value = this.get()
@@ -248,7 +272,7 @@ export default class Watcher implements DepTarget {
   }
 
   /**
-   * Depend on all deps collected by this watcher.
+   * 收集当前Watcher的所有依赖
    */
   depend() {
     let i = this.deps.length
@@ -258,20 +282,20 @@ export default class Watcher implements DepTarget {
   }
 
   /**
-   * Remove self from all dependencies' subscriber list.
+   * 从所有依赖项的订阅者列表中删除自身
    */
   teardown() {
     if (this.vm && !this.vm._isBeingDestroyed) {
-      remove(this.vm._scope.effects, this)
+      remove(this.vm._scope.effects, this) // 将当前Watcher从组件实例的effects中移除
     }
     if (this.active) {
       let i = this.deps.length
       while (i--) {
-        this.deps[i].removeSub(this)
+        this.deps[i].removeSub(this) // 将当前Watcher从依赖中移除
       }
-      this.active = false
+      this.active = false // 将当前Watcher设置为非激活
       if (this.onStop) {
-        this.onStop()
+        this.onStop() // 调用this.onStop方法
       }
     }
   }

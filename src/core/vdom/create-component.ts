@@ -28,12 +28,21 @@ import type {
 import type { Component } from 'types/component'
 import type { ComponentOptions, InternalComponentOptions } from 'types/options'
 
+/**
+ * 创建组件VNode
+ * @param options - 组件选项
+ */
 export function getComponentName(options: ComponentOptions) {
   return options.name || options.__name || options._componentTag
 }
 
 // inline hooks to be invoked on component VNodes during patch
 const componentVNodeHooks = {
+  /**
+   * 初始化组件
+   * @param vnode - 虚拟节点
+   * @param hydrating - 是否是服务端渲染
+   */
   init(vnode: VNodeWithData, hydrating: boolean): boolean | void {
     if (
       vnode.componentInstance &&
@@ -51,7 +60,11 @@ const componentVNodeHooks = {
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
-
+  /**
+   * 更新组件
+   * @param oldVnode - 旧虚拟节点
+   * @param vnode - 新虚拟节点
+   */
   prepatch(oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = (vnode.componentInstance = oldVnode.componentInstance)
@@ -63,7 +76,10 @@ const componentVNodeHooks = {
       options.children // new children
     )
   },
-
+  /**
+   * 插入组件
+   * @param vnode - 虚拟节点
+   */
   insert(vnode: MountedComponentVNode) {
     const { context, componentInstance } = vnode
     if (!componentInstance._isMounted) {
@@ -83,7 +99,10 @@ const componentVNodeHooks = {
       }
     }
   },
-
+  /**
+   * 销毁组件
+   * @param vnode
+   */
   destroy(vnode: MountedComponentVNode) {
     const { componentInstance } = vnode
     if (!componentInstance._isDestroyed) {
@@ -98,6 +117,14 @@ const componentVNodeHooks = {
 
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
+/**
+ * 创建组件VNode
+ * @param Ctor - 组件构造函数
+ * @param data - VNodeData
+ * @param context - 组件的父组件实例
+ * @param children - 子节点
+ * @param tag - 标签
+ */
 export function createComponent(
   Ctor: typeof Component | Function | ComponentOptions | void,
   data: VNodeData | undefined,
@@ -209,6 +236,11 @@ export function createComponent(
   return vnode
 }
 
+/**
+ * 为Vnode创建零部件实例的钩子函数
+ * @param vnode - 虚拟节点
+ * @param parent - 父组件实例
+ */
 export function createComponentInstanceForVnode(
   // we know it's MountedComponentVNode but flow doesn't
   vnode: any,
@@ -229,6 +261,10 @@ export function createComponentInstanceForVnode(
   return new vnode.componentOptions.Ctor(options)
 }
 
+/**
+ * 安装组件钩子
+ * @param data - VNodeData
+ */
 function installComponentHooks(data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
@@ -242,6 +278,11 @@ function installComponentHooks(data: VNodeData) {
   }
 }
 
+/**
+ * 合并钩子
+ * @param f1 - 钩子函数1
+ * @param f2 - 钩子函数2
+ */
 function mergeHook(f1: any, f2: any): Function {
   const merged = (a, b) => {
     // flow complains about extra args which is why we use any
@@ -254,6 +295,11 @@ function mergeHook(f1: any, f2: any): Function {
 
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
+/**
+ * 将组件v-model信息（值和回调）转换为prop和事件处理程序
+ * @param options - 组件选项
+ * @param data - VNodeData
+ */
 function transformModel(options, data: any) {
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'

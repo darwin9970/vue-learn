@@ -13,6 +13,10 @@ import { EffectScope } from 'v3/reactivity/effectScope'
 
 let uid = 0
 
+/**
+ * 允许扩展类挂钩的“Component”构造函数
+ * @param Vue - Vue构造函数
+ */
 export function initMixin(Vue: typeof Component) {
   Vue.prototype._init = function (options?: Record<string, any>) {
     const vm: Component = this
@@ -78,6 +82,11 @@ export function initMixin(Vue: typeof Component) {
   }
 }
 
+/**
+ * 初始化内部组件
+ * @param vm - 组件实例
+ * @param options - 组件的配置项
+ */
 export function initInternalComponent(
   vm: Component,
   options: InternalComponentOptions
@@ -100,6 +109,10 @@ export function initInternalComponent(
   }
 }
 
+/**
+ * 解析构造函数的选项
+ * @param Ctor - 构造函数
+ */
 export function resolveConstructorOptions(Ctor: typeof Component) {
   let options = Ctor.options
   if (Ctor.super) {
@@ -124,6 +137,11 @@ export function resolveConstructorOptions(Ctor: typeof Component) {
   return options
 }
 
+/**
+ * 解析修改过的选项,
+ * 如果有修改过的选项，则返回修改过的选项，否则返回null
+ * @param Ctor - 构造函数
+ */
 function resolveModifiedOptions(
   Ctor: typeof Component
 ): Record<string, any> | null {

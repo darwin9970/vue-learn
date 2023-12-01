@@ -74,6 +74,11 @@ export interface VueTemplateCompilerParseOptions {
 /**
  * Parse a single-file component (*.vue) file into an SFC Descriptor Object.
  */
+/**
+ * 解析单文件组件。
+ * @param source - 源码
+ * @param options - 配置项
+ */
 export function parseComponent(
   source: string,
   options: VueTemplateCompilerParseOptions = {}
@@ -109,7 +114,6 @@ export function parseComponent(
       sfc.errors.push(data)
     }
   }
-
   function start(
     tag: string,
     attrs: ASTAttr[],

@@ -20,10 +20,10 @@ import type { Component } from 'types/component'
 import type { ComponentOptions } from 'types/options'
 
 /**
- * Option overwriting strategies are functions that handle
- * how to merge a parent option value and a child option
- * value into the final value.
+ * 选项覆盖策略是处理的函数
+ * 如何合并父选项值和子选项值到最终值。
  */
+
 const strats = config.optionMergeStrategies
 
 /**
@@ -48,6 +48,12 @@ if (__DEV__) {
 
 /**
  * Helper that recursively merges two data objects together.
+ */
+/**
+ * 递归地将两个数据对象合并
+ * @param to - 目标
+ * @param from - 来源
+ * @param recursive - 是否递归
  */
 function mergeData(
   to: Record<string | symbol, any>,
@@ -82,6 +88,12 @@ function mergeData(
 
 /**
  * Data
+ */
+/**
+ * 合并data或fn
+ * @param parentVal
+ * @param childVal
+ * @param vm
  */
 export function mergeDataOrFn(
   parentVal: any,
@@ -151,6 +163,11 @@ strats.data = function (
 /**
  * Hooks and props are merged as arrays.
  */
+/**
+ * 合并生命周期钩子
+ * @param parentVal - 父选项值
+ * @param childVal - 子选项值
+ */
 export function mergeLifecycleHook(
   parentVal: Array<Function> | null,
   childVal: Function | Array<Function> | null
@@ -165,6 +182,10 @@ export function mergeLifecycleHook(
   return res ? dedupeHooks(res) : res
 }
 
+/**
+ * 对钩子函数数组进行重复数据消除，以便可以注册相同的钩子函数
+ * @param hooks
+ */
 function dedupeHooks(hooks: any) {
   const res: Array<any> = []
   for (let i = 0; i < hooks.length; i++) {
@@ -180,11 +201,11 @@ LIFECYCLE_HOOKS.forEach(hook => {
 })
 
 /**
- * Assets
- *
- * When a vm is present (instance creation), we need to do
- * a three-way merge between constructor options, instance
- * options and parent options.
+ * 当vm存在（实例创建）时，我们需要构造函数选项、实例之间的三元合并选项和父选项。
+ * @param parentVal - 父选项值
+ * @param childVal - 子选项值
+ * @param vm - 组件实例
+ * @param key - 键
  */
 function mergeAssets(
   parentVal: Object | null,
@@ -210,6 +231,13 @@ ASSET_TYPES.forEach(function (type) {
  *
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
+ */
+/**
+ * 观察者哈希不应覆盖一个另一个，所以我们将它们合并为数组。
+ * @param parentVal - 父选项值
+ * @param childVal - 子选项值
+ * @param vm - 组件实例
+ * @param key - 键
  */
 strats.watch = function (
   parentVal: Record<string, any> | null,
@@ -281,14 +309,17 @@ strats.provide = function (parentVal: Object | null, childVal: Object | null) {
 }
 
 /**
- * Default strategy.
+ * 默认策略
+ * @param parentVal - 父选项值
+ * @param childVal - 子选项值
  */
 const defaultStrat = function (parentVal: any, childVal: any): any {
   return childVal === undefined ? parentVal : childVal
 }
 
 /**
- * Validate component names
+ * 检查组件
+ * @param options - 选项
  */
 function checkComponents(options: Record<string, any>) {
   for (const key in options.components) {
@@ -296,6 +327,10 @@ function checkComponents(options: Record<string, any>) {
   }
 }
 
+/**
+ * 验证组件名称，组件名称应符合html5规范中的有效自定义元素名称。
+ * @param name - 组件名称
+ */
 export function validateComponentName(name: string) {
   if (
     !new RegExp(`^[a-zA-Z][\\-\\.0-9_${unicodeRegExp.source}]*$`).test(name)
@@ -317,8 +352,9 @@ export function validateComponentName(name: string) {
 }
 
 /**
- * Ensure all props option syntax are normalized into the
- * Object-based format.
+ * 将所有props选项语法规范化为基于对象的格式。
+ * @param options - 选项
+ * @param vm - 组件实例
  */
 function normalizeProps(options: Record<string, any>, vm?: Component | null) {
   const props = options.props
@@ -353,7 +389,9 @@ function normalizeProps(options: Record<string, any>, vm?: Component | null) {
 }
 
 /**
- * Normalize all injections into Object-based format
+ * 将所有注入规范化为基于对象的格式。
+ * @param options - 选项
+ * @param vm - 组件实例
  */
 function normalizeInject(options: Record<string, any>, vm?: Component | null) {
   const inject = options.inject
@@ -380,7 +418,8 @@ function normalizeInject(options: Record<string, any>, vm?: Component | null) {
 }
 
 /**
- * Normalize raw function directives into object format.
+ * 将原始函数指令规范化为对象格式。
+ * @param options - 选项
  */
 function normalizeDirectives(options: Record<string, any>) {
   const dirs = options.directives
@@ -394,6 +433,12 @@ function normalizeDirectives(options: Record<string, any>) {
   }
 }
 
+/**
+ * 断言对象类型
+ * @param name - 名称
+ * @param value - 值
+ * @param vm - 组件实例
+ */
 function assertObjectType(name: string, value: any, vm: Component | null) {
   if (!isPlainObject(value)) {
     warn(
@@ -405,8 +450,10 @@ function assertObjectType(name: string, value: any, vm: Component | null) {
 }
 
 /**
- * Merge two option objects into a new one.
- * Core utility used in both instantiation and inheritance.
+ * 将两个选项对象合并为一个新对象。
+ * @param parent - 父选项
+ * @param child - 子选项
+ * @param vm - 组件实例
  */
 export function mergeOptions(
   parent: Record<string, any>,
@@ -459,9 +506,11 @@ export function mergeOptions(
 }
 
 /**
- * Resolve an asset.
- * This function is used because child instances need access
- * to assets defined in its ancestor chain.
+ * 解析资源，使用此函数是因为子实例需要访问其祖先链中定义的资源。
+ * @param options - 选项
+ * @param type - 类型
+ * @param id - id
+ * @param warnMissing - 是否警告缺失
  */
 export function resolveAsset(
   options: Record<string, any>,

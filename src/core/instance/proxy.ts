@@ -4,7 +4,6 @@ import config from 'core/config'
 import { warn, makeMap, isNative } from '../util/index'
 
 let initProxy
-
 if (__DEV__) {
   const allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
@@ -12,7 +11,6 @@ if (__DEV__) {
       'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,BigInt,' +
       'require' // for Webpack/Browserify
   )
-
   const warnNonPresent = (target, key) => {
     warn(
       `Property or method "${key}" is not defined on the instance but ` +
@@ -35,7 +33,6 @@ if (__DEV__) {
   }
 
   const hasProxy = typeof Proxy !== 'undefined' && isNative(Proxy)
-
   if (hasProxy) {
     const isBuiltInModifier = makeMap(
       'stop,prevent,self,ctrl,shift,alt,meta,exact'

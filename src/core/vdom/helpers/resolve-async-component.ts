@@ -15,6 +15,13 @@ import { currentRenderingInstance } from 'core/instance/render'
 import type { VNodeData } from 'types/vnode'
 import type { Component } from 'types/component'
 
+/**
+ * 确保组件构造函数，
+ * 如果是ES6模块则返回default，否则返回组件构造函数，
+ * 如果是对象则返回Vue.extend，否则返回组件构造函数
+ * @param comp - 组件
+ * @param base - 基础组件
+ */
 function ensureCtor(comp: any, base) {
   if (comp.__esModule || (hasSymbol && comp[Symbol.toStringTag] === 'Module')) {
     comp = comp.default
@@ -22,6 +29,14 @@ function ensureCtor(comp: any, base) {
   return isObject(comp) ? base.extend(comp) : comp
 }
 
+/**
+ * 创建异步占位符
+ * @param factory - 工厂函数
+ * @param data - 数据
+ * @param context - 上下文
+ * @param children - 子节点
+ * @param tag - 标签
+ */
 export function createAsyncPlaceholder(
   factory: Function,
   data: VNodeData | undefined,
@@ -35,6 +50,11 @@ export function createAsyncPlaceholder(
   return node
 }
 
+/**
+ * 解析异步组件
+ * @param factory - 工厂函数
+ * @param baseCtor - 基础组件
+ */
 export function resolveAsyncComponent(
   factory: { (...args: any[]): any; [keye: string]: any },
   baseCtor: typeof Component

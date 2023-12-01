@@ -13,12 +13,22 @@ export default {
   }
 }
 
+/**
+ * 更新指令
+ * @param oldVnode - 旧的虚拟节点
+ * @param vnode - 新的虚拟节点
+ */
 function updateDirectives(oldVnode: VNodeWithData, vnode: VNodeWithData) {
   if (oldVnode.data.directives || vnode.data.directives) {
     _update(oldVnode, vnode)
   }
 }
 
+/**
+ * 更新，创建，销毁指令
+ * @param oldVnode - 旧的虚拟节点
+ * @param vnode - 新的虚拟节点
+ */
 function _update(oldVnode, vnode) {
   const isCreate = oldVnode === emptyNode
   const isDestroy = vnode === emptyNode
@@ -85,6 +95,11 @@ function _update(oldVnode, vnode) {
 
 const emptyModifiers = Object.create(null)
 
+/**
+ * 规范化指令
+ * @param dirs - 指令
+ * @param vm - 组件实例
+ */
 function normalizeDirectives(
   dirs: Array<VNodeDirective> | undefined,
   vm: Component
@@ -119,12 +134,24 @@ function normalizeDirectives(
   return res
 }
 
+/**
+ * 获取原始指令名
+ * @param dir - 指令
+ */
 function getRawDirName(dir: VNodeDirective): string {
   return (
     dir.rawName || `${dir.name}.${Object.keys(dir.modifiers || {}).join('.')}`
   )
 }
 
+/**
+ * 调用钩子函数
+ * @param dir - 指令
+ * @param hook - 钩子函数名
+ * @param vnode - 虚拟节点
+ * @param oldVnode - 旧的虚拟节点
+ * @param isDestroy - 是否销毁
+ */
 function callHook(dir, hook, vnode, oldVnode, isDestroy?: any) {
   const fn = dir.def && dir.def[hook]
   if (fn) {

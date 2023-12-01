@@ -20,6 +20,12 @@ export interface StylePreprocessorResults {
 }
 
 // .scss/.sass processor
+/**
+ * scss预编译器
+ * @param source - scss源码
+ * @param map - scss源码的sourcemap
+ * @param options - scss编译器的配置项
+ */
 const scss: StylePreprocessor = (source, map, options) => {
   const nodeSass = require('sass')
   const finalOptions = {
@@ -47,7 +53,12 @@ const scss: StylePreprocessor = (source, map, options) => {
     return { code: '', errors: [e], dependencies: [] }
   }
 }
-
+/**
+ * sass预编译器
+ * @param source - sass源码
+ * @param map - sass源码的sourcemap
+ * @param options - sass编译器的配置项
+ */
 const sass: StylePreprocessor = (source, map, options) =>
   scss(source, map, {
     ...options,
@@ -55,6 +66,12 @@ const sass: StylePreprocessor = (source, map, options) =>
   })
 
 // .less
+/**
+ * less预编译器
+ * @param source - less源码
+ * @param map - less源码的sourcemap
+ * @param options - less编译器的配置项
+ */
 const less: StylePreprocessor = (source, map, options) => {
   const nodeLess = require('less')
 
@@ -88,6 +105,12 @@ const less: StylePreprocessor = (source, map, options) => {
 }
 
 // .styl
+/**
+ * stylus预编译器
+ * @param source - stylus源码
+ * @param map - stylus源码的sourcemap
+ * @param options - stylus编译器的配置项
+ */
 const styl: StylePreprocessor = (source, map, options) => {
   const nodeStylus = require('stylus')
   try {
@@ -112,6 +135,12 @@ const styl: StylePreprocessor = (source, map, options) => {
   }
 }
 
+/**
+ * 获取源码
+ * @param source - 源码
+ * @param filename - 文件名
+ * @param additionalData - 额外的数据
+ */
 function getSource(
   source: string,
   filename: string,

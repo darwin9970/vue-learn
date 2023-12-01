@@ -19,6 +19,13 @@ type PropOptions = {
   validator?: Function
 }
 
+/**
+ * 校验props
+ * @param key - 键
+ * @param propOptions - props选项
+ * @param propsData - props数据
+ * @param vm - 组件实例
+ */
 export function validateProp(
   key: string,
   propOptions: Object,
@@ -59,7 +66,10 @@ export function validateProp(
 }
 
 /**
- * Get the default value of a prop.
+ * 获取prop的默认值
+ * @param vm - 组件实例
+ * @param prop - prop选项
+ * @param key - 键
  */
 function getPropDefaultValue(
   vm: Component | undefined,
@@ -100,7 +110,12 @@ function getPropDefaultValue(
 }
 
 /**
- * Assert whether a prop is valid.
+ * 断言prop是否有效
+ * @param prop - prop选项
+ * @param name - 名称
+ * @param value - 值
+ * @param vm - 组件实例
+ * @param absent - 是否缺失
  */
 function assertProp(
   prop: PropOptions,
@@ -148,6 +163,12 @@ function assertProp(
 
 const simpleCheckRE = /^(String|Number|Boolean|Function|Symbol|BigInt)$/
 
+/**
+ * 断言类型
+ * @param value - 值
+ * @param type - 类型
+ * @param vm - 组件实例
+ */
 function assertType(
   value: any,
   type: Function,
@@ -183,22 +204,36 @@ function assertType(
   }
 }
 
-const functionTypeCheckRE = /^\s*function (\w+)/
+const functionTypeCheckRE = /^\s*function (\w+)/ // 匹配函数类型的正则
 
 /**
  * Use function string name to check built-in types,
  * because a simple equality check will fail when running
  * across different vms / iframes.
  */
+/**
+ * 使用函数字符串名称检查内置类型，因为简单的相等性检查在在vms/iframe运行时会失败。
+ * @param fn
+ */
 function getType(fn) {
   const match = fn && fn.toString().match(functionTypeCheckRE)
   return match ? match[1] : ''
 }
 
+/**
+ * 判断是否相同类型
+ * @param a - a
+ * @param b - b
+ */
 function isSameType(a, b) {
   return getType(a) === getType(b)
 }
 
+/**
+ * 获取类型索引
+ * @param type - 类型
+ * @param expectedTypes - 期望类型
+ */
 function getTypeIndex(type, expectedTypes): number {
   if (!isArray(expectedTypes)) {
     return isSameType(expectedTypes, type) ? 0 : -1
@@ -211,6 +246,12 @@ function getTypeIndex(type, expectedTypes): number {
   return -1
 }
 
+/**
+ * 获取无效类型消息
+ * @param name - 名称
+ * @param value - 值
+ * @param expectedTypes - 期望类型
+ */
 function getInvalidTypeMessage(name, value, expectedTypes) {
   let message =
     `Invalid prop: type check failed for prop "${name}".` +
@@ -234,6 +275,11 @@ function getInvalidTypeMessage(name, value, expectedTypes) {
   return message
 }
 
+/**
+ * 样式化值
+ * @param value - 值
+ * @param type - 类型
+ */
 function styleValue(value, type) {
   if (type === 'String') {
     return `"${value}"`
@@ -244,11 +290,19 @@ function styleValue(value, type) {
   }
 }
 
-const EXPLICABLE_TYPES = ['string', 'number', 'boolean']
+const EXPLICABLE_TYPES = ['string', 'number', 'boolean'] // 可解释的类型
+/**
+ * 判断是否可解释
+ * @param value - 值
+ */
 function isExplicable(value) {
   return EXPLICABLE_TYPES.some(elem => value.toLowerCase() === elem)
 }
 
+/**
+ * 判断是否为布尔值
+ * @param args - 参数
+ */
 function isBoolean(...args) {
   return args.some(elem => elem.toLowerCase() === 'boolean')
 }

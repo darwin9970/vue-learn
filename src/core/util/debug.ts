@@ -1,8 +1,8 @@
 import config from '../config'
-import { noop, isArray, isFunction } from 'shared/util'
-import type { Component } from 'types/component'
-import { currentInstance } from 'v3/currentInstance'
-import { getComponentName } from '../vdom/create-component'
+import {isArray, isFunction, noop} from 'shared/util'
+import type {Component} from 'types/component'
+import {currentInstance} from 'v3/currentInstance'
+import {getComponentName} from '../vdom/create-component'
 
 export let warn: (msg: string, vm?: Component | null) => void = noop
 export let tip = noop
@@ -10,11 +10,19 @@ export let generateComponentTrace: (vm: Component) => string // work around flow
 export let formatComponentName: (vm: Component, includeFile?: false) => string
 
 if (__DEV__) {
-  const hasConsole = typeof console !== 'undefined'
-  const classifyRE = /(?:^|[-_])(\w)/g
+  const hasConsole = typeof console !== 'undefined' // 判断是否有console
+  const classifyRE = /(?:^|[-_])(\w)/g // 匹配正则
+  /**
+   * 将字符串转换为大写
+   * @param str - 字符串
+   */
   const classify = str =>
     str.replace(classifyRE, c => c.toUpperCase()).replace(/[-_]/g, '')
-
+  /**
+   * 警告
+   * @param msg - 消息
+   * @param vm - 组件实例
+   */
   warn = (msg, vm = currentInstance) => {
     const trace = vm ? generateComponentTrace(vm) : ''
 
@@ -24,13 +32,21 @@ if (__DEV__) {
       console.error(`[Vue warn]: ${msg}${trace}`)
     }
   }
-
+  /**
+   * 提示
+   * @param msg - 消息
+   * @param vm - 组件实例
+   */
   tip = (msg, vm) => {
     if (hasConsole && !config.silent) {
       console.warn(`[Vue tip]: ${msg}` + (vm ? generateComponentTrace(vm) : ''))
     }
   }
-
+  /**
+   * 格式化组件名称
+   * @param vm - 组件实例
+   * @param includeFile - 是否包含文件
+   */
   formatComponentName = (vm, includeFile) => {
     if (vm.$root === vm) {
       return '<Root>'
@@ -39,8 +55,8 @@ if (__DEV__) {
       isFunction(vm) && (vm as any).cid != null
         ? (vm as any).options
         : vm._isVue
-        ? vm.$options || (vm.constructor as any).options
-        : vm
+          ? vm.$options || (vm.constructor as any).options
+          : vm
     let name = getComponentName(options)
     const file = options.__file
     if (!name && file) {
@@ -53,7 +69,11 @@ if (__DEV__) {
       (file && includeFile !== false ? ` at ${file}` : '')
     )
   }
-
+  /**
+   * 重复字符串
+   * @param str - 字符串
+   * @param n - 重复次数
+   */
   const repeat = (str, n) => {
     let res = ''
     while (n) {
@@ -63,7 +83,10 @@ if (__DEV__) {
     }
     return res
   }
-
+  /**
+   * 生成组件追踪，用于调试
+   * @param vm - 组件实例
+   */
   generateComponentTrace = (vm: Component | undefined) => {
     if ((vm as any)._isVue && vm!.$parent) {
       const tree: any[] = []
@@ -91,8 +114,8 @@ if (__DEV__) {
               `${i === 0 ? '---> ' : repeat(' ', 5 + i * 2)}${
                 isArray(vm)
                   ? `${formatComponentName(vm[0])}... (${
-                      vm[1]
-                    } recursive calls)`
+                    vm[1]
+                  } recursive calls)`
                   : formatComponentName(vm)
               }`
           )

@@ -11,14 +11,16 @@ export const createCompiler = createCompilerCreator(function baseCompile(
   template: string,
   options: CompilerOptions
 ): CompiledResult {
+  // 解析模板字符串，生成抽象语法树
   const ast = parse(template.trim(), options)
+  // 优化抽象语法树
   if (options.optimize !== false) {
     optimize(ast, options)
   }
-  const code = generate(ast, options)
+  const code = generate(ast, options) // 生成代码
   return {
-    ast,
-    render: code.render,
-    staticRenderFns: code.staticRenderFns
+    ast, // 抽象语法树
+    render: code.render, // 渲染函数
+    staticRenderFns: code.staticRenderFns // 静态渲染函数
   }
 })
